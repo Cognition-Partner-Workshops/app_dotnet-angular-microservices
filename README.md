@@ -49,7 +49,8 @@ For production, build with `npx ng build` — output goes to `../wwwroot` and is
 | Method | Endpoint              | Description                |
 |--------|-----------------------|----------------------------|
 | GET    | `/api/customers`      | List all customers         |
-| GET    | `/api/customers/{id}` | Get customer by ID (returns `CustomerDto`) |
+| GET    | `/api/customers/{id}` | Get customer by ID (full entity)  |
+| GET    | `/api/customers/{id}/dto` | Get customer DTO (cross-service contract) |
 | POST   | `/api/customers`      | Create a new customer      |
 | PUT    | `/api/customers/{id}` | Update an existing customer|
 | DELETE | `/api/customers/{id}` | Delete a customer          |
@@ -91,7 +92,7 @@ Used by other services (e.g., Orders) that need customer data for operations lik
 }
 ```
 
-The `GET /api/customers/{id}` endpoint returns the `CustomerDto` format, which includes all fields needed by the Orders service for shipping address construction (`address`, `city`, `state`, `zipCode`).
+The `GET /api/customers/{id}/dto` endpoint returns the `CustomerDto` format, which includes all fields needed by the Orders service for shipping address construction (`address`, `city`, `state`, `zipCode`). The `GET /api/customers/{id}` endpoint returns the full `Customer` entity (matching the monolith's behavior).
 
 ### Database Setup
 
