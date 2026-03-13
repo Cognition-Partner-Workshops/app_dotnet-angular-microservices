@@ -26,10 +26,18 @@ public class CustomersController : ControllerBase
     public async Task<IActionResult> GetById(int id)
     {
         var customer = await _customerService.GetCustomerByIdAsync(id);
-        if (customer is null) return NotFound();
+        return customer is null ? NotFound() : Ok(customer);
+    }
 
-        var dto = MapToDto(customer);
-        return Ok(dto);
+    /// <summary>
+    /// Returns a CustomerDto for cross-service consumption (e.g., Orders service needs shipping address).
+    /// </summary>
+    [HttpGet("{id}/dto")]
+    public async Task<IActionResult> GetDtoById(int id)
+    {
+        var customer = await _customerService.GetCustomerByIdAsync(id);
+        if (customer is null) return NotFound();
+        return Ok(MapToDto(customer));
     }
 
     [HttpPost]
