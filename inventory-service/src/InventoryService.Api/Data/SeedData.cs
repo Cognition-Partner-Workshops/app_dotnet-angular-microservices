@@ -2,8 +2,17 @@ using InventoryService.Api.Models;
 
 namespace InventoryService.Api.Data;
 
+/// <summary>
+/// Provides initial seed data for the inventory database.
+/// Populates the database with sample products on first run when no inventory records exist.
+/// </summary>
 public static class SeedData
 {
+    /// <summary>
+    /// Seeds the database with a default set of inventory items if the table is empty.
+    /// Ensures the database schema is created before attempting to insert data.
+    /// </summary>
+    /// <param name="context">The <see cref="InventoryDbContext"/> used to access and populate the database.</param>
     public static void Initialize(InventoryDbContext context)
     {
         context.Database.EnsureCreated();

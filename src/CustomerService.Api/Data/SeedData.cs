@@ -2,8 +2,17 @@ using CustomerService.Api.Models;
 
 namespace CustomerService.Api.Data;
 
+/// <summary>
+/// Provides initial seed data for the customer database.
+/// Populates the database with sample customer records on first run when no customers exist.
+/// </summary>
 public static class SeedData
 {
+    /// <summary>
+    /// Seeds the database with a default set of customers if the table is empty.
+    /// Ensures the database schema is created before attempting to insert data.
+    /// </summary>
+    /// <param name="context">The <see cref="CustomerDbContext"/> used to access and populate the database.</param>
     public static void Initialize(CustomerDbContext context)
     {
         context.Database.EnsureCreated();
