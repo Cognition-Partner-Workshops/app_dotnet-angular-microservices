@@ -1,3 +1,9 @@
+# ---------------------------------------------------------------------------
+# Kubernetes Service for the Inventory Service.
+#
+# Exposes the Deployment pods via a stable ClusterIP (default) so that
+# the Ingress controller and other in-cluster consumers can reach the API.
+# ---------------------------------------------------------------------------
 apiVersion: v1
 kind: Service
 metadata:
@@ -7,8 +13,8 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.targetPort }}
+    - port: {{ .Values.service.port }}          # Port other services connect to
+      targetPort: {{ .Values.service.targetPort }}  # Container port (8080)
       protocol: TCP
       name: http
   selector:

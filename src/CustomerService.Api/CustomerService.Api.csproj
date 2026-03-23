@@ -1,12 +1,19 @@
+<!--
+  CustomerService.Api — Project file
+  Targets .NET 8, enables nullable reference types and implicit usings.
+-->
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <TargetFramework>net8.0</TargetFramework>      <!-- Target .NET 8 LTS runtime -->
+    <Nullable>enable</Nullable>                     <!-- Enable C# nullable reference type analysis -->
+    <ImplicitUsings>enable</ImplicitUsings>         <!-- Auto-import common namespaces (System, Linq, etc.) -->
   </PropertyGroup>
   <ItemGroup>
+    <!-- EF Core SQLite provider for lightweight, file-based persistence -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0" />
+    <!-- EF Core design-time tools (migrations, scaffolding) -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0" />
+    <!-- Swagger / OpenAPI documentation generator -->
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 </Project>

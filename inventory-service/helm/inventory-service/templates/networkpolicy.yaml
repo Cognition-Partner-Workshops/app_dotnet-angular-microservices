@@ -1,3 +1,14 @@
+# ---------------------------------------------------------------------------
+# NetworkPolicy for the Inventory Service.
+#
+# Implements a least-privilege network posture:
+#   Ingress — Only allows traffic from:
+#     1. The ingress-nginx namespace (user-facing HTTP requests).
+#     2. The monitoring namespace (Prometheus metric scraping), when enabled.
+#   Egress — Only allows:
+#     1. DNS resolution (UDP/TCP port 53).
+#     2. Outbound HTTPS (port 443) for external API calls if needed.
+# ---------------------------------------------------------------------------
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -5,6 +16,7 @@ metadata:
   labels:
     {{- include "inventory-service.labels" . | nindent 4 }}
 spec:
+  # Apply this policy to pods matching the Inventory Service selector labels.
   podSelector:
     matchLabels:
       {{- include "inventory-service.selectorLabels" . | nindent 6 }}
@@ -12,6 +24,7 @@ spec:
     - Ingress
     - Egress
   ingress:
+    # Allow HTTP traffic from the ingress-nginx namespace (reverse proxy).
     - from:
         - namespaceSelector:
             matchLabels:
@@ -19,6 +32,7 @@ spec:
       ports:
         - protocol: TCP
           port: {{ .Values.service.targetPort }}
+    # Allow Prometheus scraping from the monitoring namespace (if enabled).
     {{- if .Values.monitoring.enabled }}
     - from:
         - namespaceSelector:
@@ -29,12 +43,14 @@ spec:
           port: {{ .Values.monitoring.port }}
     {{- end }}
   egress:
+    # Allow DNS lookups (required for any outbound hostname resolution).
     - to: []
       ports:
         - protocol: UDP
           port: 53
         - protocol: TCP
           port: 53
+    # Allow outbound HTTPS (e.g. for external service integrations).
     - to: []
       ports:
         - protocol: TCP

@@ -1,24 +1,31 @@
+# ---------------------------------------------------------------------------
+# ArgoCD Application manifest — Inventory Service (Staging)
+#
+# Tells ArgoCD to deploy the Inventory Service Helm chart into the
+# decomposition-staging namespace using the staging values overlay.
+# Staging mirrors production more closely (autoscaling, higher resources).
+# ---------------------------------------------------------------------------
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: inventory-service-staging
-  namespace: argocd
+  namespace: argocd                       # ArgoCD watches its own namespace for Application CRDs
 spec:
-  project: default
+  project: default                        # ArgoCD project (RBAC boundary)
   source:
     repoURL: https://github.com/Cognition-Partner-Workshops/app_dotnet-angular-microservices.git
-    targetRevision: main
-    path: inventory-service/helm/inventory-service
+    targetRevision: main                  # Git branch to track
+    path: inventory-service/helm/inventory-service  # Path to the Helm chart within the repo
     helm:
       valueFiles:
-        - values.yaml
-        - values-staging.yaml
+        - values.yaml                     # Base values (shared defaults)
+        - values-staging.yaml             # Staging-specific overrides (HPA enabled, 2+ replicas)
   destination:
-    server: https://kubernetes.default.svc
-    namespace: decomposition-staging
+    server: https://kubernetes.default.svc  # In-cluster API server
+    namespace: decomposition-staging        # Target Kubernetes namespace
   syncPolicy:
     automated:
-      prune: true
-      selfHeal: true
+      prune: true                         # Remove resources no longer defined in Git
+      selfHeal: true                      # Revert manual cluster changes to match Git
     syncOptions:
-      - CreateNamespace=true
+      - CreateNamespace=true              # Auto-create the namespace if it doesn't exist

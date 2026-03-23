@@ -42,9 +42,14 @@ using (var scope = app.Services.CreateScope())
     SeedData.Initialize(context);
 }
 
+// Enable Swagger JSON endpoint and interactive Swagger UI.
 app.UseSwagger();
 app.UseSwaggerUI();
+// Enable the default CORS policy configured above.
 app.UseCors();
+// Map attribute-routed API controllers.
 app.MapControllers();
+// Expose /health for Kubernetes liveness and readiness probes.
 app.MapHealthChecks("/health");
+// Start the Kestrel web server and begin accepting requests.
 app.Run();

@@ -6,8 +6,21 @@ using InventoryService.Api.Services;
 
 namespace InventoryService.Api.Tests;
 
+/// <summary>
+/// Unit tests for <see cref="InventoryItemService"/>.
+///
+/// Each test uses a unique in-memory database (via <see cref="CreateContext"/>)
+/// to ensure complete isolation between test cases. The seed data contains
+/// two products: "Widget A" (50 on hand) and "Widget B" (5 on hand, below
+/// the reorder level of 10).
+/// </summary>
 public class InventoryServiceTests
 {
+    /// <summary>
+    /// Creates a fresh <see cref="InventoryDbContext"/> backed by a unique
+    /// in-memory database and seeds it with two inventory items.
+    /// </summary>
+    /// <returns>A disposable <see cref="InventoryDbContext"/> ready for testing.</returns>
     private InventoryDbContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<InventoryDbContext>()
@@ -22,6 +35,10 @@ public class InventoryServiceTests
         return context;
     }
 
+    /// <summary>
+    /// Verifies that <see cref="InventoryItemService.GetAllInventoryAsync"/>
+    /// returns every seeded inventory item.
+    /// </summary>
     [Fact]
     public async Task GetAllInventory_ReturnsAllItems()
     {
@@ -31,6 +48,9 @@ public class InventoryServiceTests
         Assert.Equal(2, result.Count);
     }
 
+    /// <summary>
+    /// Verifies that looking up an existing product ID returns the correct item.
+    /// </summary>
     [Fact]
     public async Task GetByProductId_ReturnsCorrectItem()
     {
@@ -41,6 +61,9 @@ public class InventoryServiceTests
         Assert.Equal("Widget A", result.ProductName);
     }
 
+    /// <summary>
+    /// Verifies that looking up a non-existent product ID returns <c>null</c>.
+    /// </summary>
     [Fact]
     public async Task GetByProductId_ReturnsNull_WhenNotFound()
     {
@@ -50,6 +73,10 @@ public class InventoryServiceTests
         Assert.Null(result);
     }
 
+    /// <summary>
+    /// Verifies that restocking a product increases its <c>QuantityOnHand</c>
+    /// by the requested amount.
+    /// </summary>
     [Fact]
     public async Task Restock_IncreasesQuantity()
     {
@@ -59,6 +86,10 @@ public class InventoryServiceTests
         Assert.Equal(75, result.QuantityOnHand);
     }
 
+    /// <summary>
+    /// Verifies that restocking a non-existent product throws
+    /// <see cref="ArgumentException"/>.
+    /// </summary>
     [Fact]
     public async Task Restock_ThrowsForInvalidProduct()
     {
@@ -67,6 +98,10 @@ public class InventoryServiceTests
         await Assert.ThrowsAsync<ArgumentException>(() => service.RestockAsync(999, 10));
     }
 
+    /// <summary>
+    /// Verifies that <see cref="InventoryItemService.GetLowStockItemsAsync"/>
+    /// returns only items at or below their reorder level (Widget B = 5 &lt;= 10).
+    /// </summary>
     [Fact]
     public async Task GetLowStock_ReturnsItemsBelowReorderLevel()
     {
@@ -77,6 +112,10 @@ public class InventoryServiceTests
         Assert.Equal("Widget B", result[0].ProductName);
     }
 
+    /// <summary>
+    /// Verifies that deducting stock decreases <c>QuantityOnHand</c> by
+    /// the requested amount when sufficient stock is available.
+    /// </summary>
     [Fact]
     public async Task DeductStock_DecreasesQuantity()
     {
@@ -87,6 +126,10 @@ public class InventoryServiceTests
         Assert.Equal(40, result.QuantityOnHand);
     }
 
+    /// <summary>
+    /// Verifies that deducting more stock than available throws
+    /// <see cref="InvalidOperationException"/>.
+    /// </summary>
     [Fact]
     public async Task DeductStock_ThrowsForInsufficientStock()
     {
@@ -95,6 +138,10 @@ public class InventoryServiceTests
         await Assert.ThrowsAsync<InvalidOperationException>(() => service.DeductStockAsync(2, 100));
     }
 
+    /// <summary>
+    /// Verifies that deducting stock for a non-existent product returns <c>null</c>
+    /// instead of throwing an exception.
+    /// </summary>
     [Fact]
     public async Task DeductStock_ReturnsNull_WhenProductNotFound()
     {

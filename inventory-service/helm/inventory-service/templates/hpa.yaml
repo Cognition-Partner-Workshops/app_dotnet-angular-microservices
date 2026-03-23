@@ -1,3 +1,9 @@
+# ---------------------------------------------------------------------------
+# Horizontal Pod Autoscaler for the Inventory Service.
+#
+# Only created when autoscaling.enabled is true. Scales the Deployment
+# between minReplicas and maxReplicas based on average CPU utilisation.
+# ---------------------------------------------------------------------------
 {{- if .Values.autoscaling.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -6,6 +12,7 @@ metadata:
   labels:
     {{- include "inventory-service.labels" . | nindent 4 }}
 spec:
+  # Reference the Deployment this HPA manages.
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
@@ -13,6 +20,7 @@ spec:
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:
+    # Scale based on average CPU utilisation across all pods.
     - type: Resource
       resource:
         name: cpu

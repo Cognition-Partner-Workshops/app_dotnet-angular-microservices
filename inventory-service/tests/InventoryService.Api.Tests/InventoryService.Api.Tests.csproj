@@ -1,17 +1,26 @@
+<!--
+  InventoryService.Api.Tests — Unit test project
+  Uses xUnit as the test framework with an EF Core in-memory database provider.
+-->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <IsPackable>false</IsPackable>
+    <IsPackable>false</IsPackable>          <!-- Test projects should not produce NuGet packages -->
   </PropertyGroup>
   <ItemGroup>
+    <!-- MSTest SDK — required for dotnet test integration -->
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <!-- xUnit test framework -->
     <PackageReference Include="xunit" Version="2.6.2" />
+    <!-- Visual Studio / dotnet test runner adapter for xUnit -->
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.4" />
+    <!-- EF Core in-memory provider — used for isolated, fast unit tests -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <!-- Reference the main API project to test its services -->
     <ProjectReference Include="..\..\src\InventoryService.Api\InventoryService.Api.csproj" />
   </ItemGroup>
 </Project>

@@ -1,3 +1,9 @@
+# ---------------------------------------------------------------------------
+# Prometheus ServiceMonitor for the Inventory Service.
+#
+# Only created when monitoring.enabled is true. Tells Prometheus (via the
+# Prometheus Operator) to scrape the /metrics endpoint every 30 seconds.
+# ---------------------------------------------------------------------------
 {{- if .Values.monitoring.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -6,11 +12,12 @@ metadata:
   labels:
     {{- include "inventory-service.labels" . | nindent 4 }}
 spec:
+  # Match the Service created by service.yaml.
   selector:
     matchLabels:
       {{- include "inventory-service.selectorLabels" . | nindent 6 }}
   endpoints:
-    - port: http
-      path: {{ .Values.monitoring.path }}
-      interval: 30s
+    - port: http                          # Named port from the Service spec
+      path: {{ .Values.monitoring.path }} # Metrics endpoint (default: /metrics)
+      interval: 30s                       # Scrape interval
 {{- end }}

@@ -1,5 +1,16 @@
+# =============================================================================
+# CI/CD Pipeline: Build and Push Inventory Service to Amazon ECR
+#
+# This workflow runs on pushes and pull requests to the main branch when files
+# under the inventory-service/ directory are modified. It:
+#   1. Runs the .NET unit test suite.
+#   2. Authenticates to AWS via OIDC (no long-lived secrets).
+#   3. Builds a multi-stage Docker image containing the .NET API + Angular SPA.
+#   4. Pushes the image to Amazon ECR tagged with the commit SHA and "latest".
+# =============================================================================
 name: Build and Push Inventory Service to ECR
 
+# Trigger on pushes and PRs to main, but only when inventory-service files change.
 on:
   push:
     branches: [main]
@@ -10,47 +21,69 @@ on:
     paths:
       - 'inventory-service/**'
 
+# Environment variables shared across all steps.
 env:
-  AWS_REGION: us-east-1
-  ECR_REGISTRY: 599083837640.dkr.ecr.us-east-1.amazonaws.com
-  ECR_REPOSITORY: workshop/inventory-service
-  IMAGE_TAG: ${{ github.sha }}
+  AWS_REGION: us-east-1                                                  # AWS region hosting the ECR registry
+  ECR_REGISTRY: 599083837640.dkr.ecr.us-east-1.amazonaws.com            # ECR registry endpoint
+  ECR_REPOSITORY: workshop/inventory-service                             # ECR repository name
+  IMAGE_TAG: ${{ github.sha }}                                           # Tag images with the triggering commit SHA
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
-      contents: read
+      id-token: write   # Required for OIDC-based AWS authentication
+      contents: read    # Required for actions/checkout
 
     steps:
+      # ------------------------------------------------------------------
+      # Step 1: Check out the repository source code.
+      # ------------------------------------------------------------------
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # ------------------------------------------------------------------
+      # Step 2: Install the .NET 8 SDK for building and testing.
+      # ------------------------------------------------------------------
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
+      # ------------------------------------------------------------------
+      # Step 3: Install Node.js 20 (used by the Dockerfile's client-build stage).
+      # ------------------------------------------------------------------
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
+      # ------------------------------------------------------------------
+      # Step 4: Execute the xUnit test suite to gate the build on quality.
+      # ------------------------------------------------------------------
       - name: Run .NET tests
         working-directory: inventory-service
         run: dotnet test --verbosity normal
 
+      # ------------------------------------------------------------------
+      # Step 5: Authenticate to AWS using GitHub OIDC federation (no secrets).
+      # ------------------------------------------------------------------
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::599083837640:role/github-actions-ecr-push
           aws-region: ${{ env.AWS_REGION }}
 
+      # ------------------------------------------------------------------
+      # Step 6: Log in to the Amazon ECR private registry.
+      # ------------------------------------------------------------------
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      # ------------------------------------------------------------------
+      # Step 7: Build the Docker image and push both :sha and :latest tags.
+      # ------------------------------------------------------------------
       - name: Build and push Docker image
         working-directory: inventory-service
         run: |

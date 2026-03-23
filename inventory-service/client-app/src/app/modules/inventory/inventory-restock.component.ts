@@ -4,6 +4,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
 
+/**
+ * Provides a simple form for restocking a product by its ID.
+ *
+ * The user enters a product ID and a quantity, then submits a
+ * `POST /api/inventory/product/{id}/restock` request. Success and error
+ * feedback is shown inline via the {@link message} property.
+ */
 @Component({
   selector: 'app-inventory-restock',
   standalone: true,
@@ -19,12 +26,20 @@ import { environment } from '../../../environments/environment';
   `
 })
 export class InventoryRestockComponent {
+  /** The numeric product identifier entered by the user. */
   productId = 0;
+  /** The number of units to add to the product's stock. */
   quantity = 0;
+  /** Feedback message displayed after a restock attempt (success or error). */
   message = '';
 
+  /** @param http Angular HTTP client used to call the Inventory REST API. */
   constructor(private http: HttpClient) {}
 
+  /**
+   * Sends a restock request to the backend for the selected product.
+   * Updates {@link message} with the result or error details.
+   */
   restock() {
     this.http.post<any>(`${environment.apiUrl}/api/inventory/product/${this.productId}/restock`, { quantity: this.quantity })
       .subscribe({

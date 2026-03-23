@@ -3,6 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
 
+/**
+ * Displays a table of all inventory items fetched from the Inventory API.
+ *
+ * Rows whose `quantityOnHand` is at or below their `reorderLevel` receive
+ * the `low-stock` CSS class so they can be visually highlighted.
+ */
 @Component({
   selector: 'app-inventory-list',
   standalone: true,
@@ -20,8 +26,13 @@ import { environment } from '../../../environments/environment';
   `
 })
 export class InventoryListComponent implements OnInit {
+  /** Full list of inventory items retrieved from the backend. */
   items: any[] = [];
+
+  /** @param http Angular HTTP client used to call the Inventory REST API. */
   constructor(private http: HttpClient) {}
+
+  /** Fetches all inventory items from `GET /api/inventory` on component initialisation. */
   ngOnInit() {
     this.http.get<any[]>(`${environment.apiUrl}/api/inventory`).subscribe(data => this.items = data);
   }

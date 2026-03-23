@@ -43,11 +43,18 @@ using (var scope = app.Services.CreateScope())
     SeedData.Initialize(context);
 }
 
+// Enable Swagger JSON endpoint and interactive Swagger UI.
 app.UseSwagger();
 app.UseSwaggerUI();
+// Enable the default CORS policy configured above.
 app.UseCors();
+// Serve the embedded Angular SPA assets from wwwroot.
 app.UseStaticFiles();
+// Map attribute-routed API controllers.
 app.MapControllers();
+// Expose /health for Kubernetes liveness and readiness probes.
 app.MapHealthChecks("/health");
+// For any unmatched route, serve index.html so Angular handles client-side routing.
 app.MapFallbackToFile("index.html");
+// Start the Kestrel web server and begin accepting requests.
 app.Run();

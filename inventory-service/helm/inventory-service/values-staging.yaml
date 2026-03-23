@@ -1,8 +1,18 @@
+# =============================================================================
+# Staging environment overrides for the Inventory Service Helm chart.
+#
+# Merged on top of values.yaml when deploying to the staging namespace.
+# Mirrors production settings more closely — autoscaling is enabled with
+# multiple replicas to validate scaling behaviour before production rollout.
+# =============================================================================
+
+# -- Baseline replica count before HPA kicks in.
 replicaCount: 2
 
 image:
-  tag: staging-latest
+  tag: staging-latest             # Staging-specific image tag
 
+# -- Staging-specific Ingress hostname.
 ingress:
   hosts:
     - host: inventory-service-staging.workshop.local
@@ -10,6 +20,7 @@ ingress:
         - path: /
           pathType: Prefix
 
+# -- Production-equivalent resource allocations for realistic load testing.
 resources:
   requests:
     cpu: 100m
@@ -18,8 +29,9 @@ resources:
     cpu: 500m
     memory: 512Mi
 
+# -- Horizontal Pod Autoscaler enabled in staging to validate scaling policies.
 autoscaling:
   enabled: true
   minReplicas: 2
   maxReplicas: 4
-  targetCPUUtilizationPercentage: 75
+  targetCPUUtilizationPercentage: 75  # Scale up earlier than default (80%) for safety margin

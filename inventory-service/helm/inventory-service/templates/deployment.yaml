@@ -1,3 +1,10 @@
+# ---------------------------------------------------------------------------
+# Kubernetes Deployment for the Inventory Service.
+#
+# Creates a ReplicaSet that manages pods running the .NET 8 API container.
+# When autoscaling is enabled the replica count is controlled by the HPA
+# instead of the static replicaCount value.
+# ---------------------------------------------------------------------------
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -5,6 +12,7 @@ metadata:
   labels:
     {{- include "inventory-service.labels" . | nindent 4 }}
 spec:
+  # Only set replicas explicitly when the HPA is not managing scaling.
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
@@ -24,18 +32,22 @@ spec:
             - name: http
               containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
+          # Inject environment variables (e.g. ASP.NET Core env, connection strings).
           {{- if .Values.env }}
           env:
             {{- toYaml .Values.env | nindent 12 }}
           {{- end }}
+          # CPU and memory resource requests/limits.
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          # Liveness probe — restart the pod if the /health endpoint stops responding.
           livenessProbe:
             httpGet:
               path: /health
               port: http
             initialDelaySeconds: 15
             periodSeconds: 20
+          # Readiness probe — stop routing traffic to the pod until /health is healthy.
           readinessProbe:
             httpGet:
               path: /health

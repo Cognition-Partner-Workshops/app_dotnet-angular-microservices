@@ -1,8 +1,17 @@
+# =============================================================================
+# Development environment overrides for the Inventory Service Helm chart.
+#
+# Merged on top of values.yaml when deploying to the dev namespace.
+# Uses minimal resources and disables persistent storage for fast iteration.
+# =============================================================================
+
+# -- Single replica is sufficient for development.
 replicaCount: 1
 
 image:
-  tag: dev-latest
+  tag: dev-latest                 # Dev-specific image tag built from the latest commit
 
+# -- Dev-specific Ingress hostname.
 ingress:
   hosts:
     - host: inventory-service-dev.workshop.local
@@ -10,6 +19,7 @@ ingress:
         - path: /
           pathType: Prefix
 
+# -- Reduced resource allocations suitable for a shared dev cluster.
 resources:
   requests:
     cpu: 50m
@@ -18,11 +28,13 @@ resources:
     cpu: 250m
     memory: 256Mi
 
+# -- Development environment variables (enables detailed logging, uses local DB).
 env:
   - name: ASPNETCORE_ENVIRONMENT
     value: Development
   - name: ConnectionStrings__DefaultConnection
-    value: "Data Source=inventory.db"
+    value: "Data Source=inventory.db"          # Local file — no persistent volume needed
 
+# -- Persistent storage disabled in dev; SQLite file is ephemeral.
 persistence:
   enabled: false

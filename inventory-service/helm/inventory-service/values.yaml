@@ -1,26 +1,38 @@
+# =============================================================================
+# Default Helm values for the Inventory Service.
+#
+# These values are merged with environment-specific overrides
+# (values-dev.yaml, values-staging.yaml) at deploy time.
+# =============================================================================
+
+# -- Number of pod replicas (ignored when autoscaling is enabled).
 replicaCount: 1
 
+# -- Container image settings.
 image:
-  repository: 599083837640.dkr.ecr.us-east-1.amazonaws.com/workshop/inventory-service
-  tag: latest
-  pullPolicy: IfNotPresent
+  repository: 599083837640.dkr.ecr.us-east-1.amazonaws.com/workshop/inventory-service  # ECR image URI
+  tag: latest                     # Image tag; overridden per environment
+  pullPolicy: IfNotPresent        # Pull only if the image is not already cached locally
 
+# -- Kubernetes Service configuration.
 service:
-  type: ClusterIP
-  port: 80
-  targetPort: 8080
+  type: ClusterIP                 # Internal-only service; external access is via Ingress
+  port: 80                        # Port exposed by the Service object
+  targetPort: 8080                # Port the container listens on (matches Dockerfile EXPOSE)
 
+# -- Ingress configuration for external HTTP(S) access.
 ingress:
   enabled: true
-  className: nginx
+  className: nginx                # Use the nginx IngressClass
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-staging
+    cert-manager.io/cluster-issuer: letsencrypt-staging  # Automatic TLS certificate provisioning
   hosts:
     - host: inventory-service.workshop.local
       paths:
         - path: /
           pathType: Prefix
 
+# -- Pod resource requests and limits.
 resources:
   requests:
     cpu: 100m
@@ -29,24 +41,28 @@ resources:
     cpu: 500m
     memory: 512Mi
 
+# -- Horizontal Pod Autoscaler settings.
 autoscaling:
-  enabled: false
+  enabled: false                  # Disabled by default; enabled in staging/production overrides
   minReplicas: 1
   maxReplicas: 3
   targetCPUUtilizationPercentage: 80
 
+# -- Environment variables injected into the container.
 env:
   - name: ASPNETCORE_ENVIRONMENT
     value: Production
   - name: ConnectionStrings__DefaultConnection
-    value: "Data Source=/data/inventory.db"
+    value: "Data Source=/data/inventory.db"   # Points to the persistent volume mount path
 
+# -- Persistent storage for the SQLite database file.
 persistence:
   enabled: true
   size: 1Gi
-  storageClass: gp2
+  storageClass: gp2               # AWS EBS gp2 volume class
 
+# -- Prometheus ServiceMonitor configuration for metrics scraping.
 monitoring:
   enabled: true
-  path: /metrics
-  port: 8080
+  path: /metrics                  # Metrics endpoint path
+  port: 8080                      # Port to scrape

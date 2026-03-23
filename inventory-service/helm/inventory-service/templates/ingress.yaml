@@ -1,3 +1,10 @@
+# ---------------------------------------------------------------------------
+# Kubernetes Ingress for the Inventory Service.
+#
+# Only created when ingress.enabled is true. Routes external HTTP traffic
+# from the configured hostname(s) to the Service. Annotations allow
+# cert-manager to automatically provision TLS certificates.
+# ---------------------------------------------------------------------------
 {{- if .Values.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -12,6 +19,7 @@ metadata:
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   rules:
+    # Iterate over each configured host and its path rules.
     {{- range .Values.ingress.hosts }}
     - host: {{ .host | quote }}
       http:

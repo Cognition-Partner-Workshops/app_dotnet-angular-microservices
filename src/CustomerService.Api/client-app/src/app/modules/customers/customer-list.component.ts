@@ -3,6 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
 
+/**
+ * Displays a table of all customers fetched from the Customer API.
+ *
+ * Each row shows the customer’s name, email, phone number, and city/state.
+ */
 @Component({
   selector: 'app-customer-list',
   standalone: true,
@@ -20,8 +25,13 @@ import { environment } from '../../../environments/environment';
   `
 })
 export class CustomerListComponent implements OnInit {
+  /** Full list of customer records retrieved from the backend. */
   customers: any[] = [];
+
+  /** @param http Angular HTTP client used to call the Customer REST API. */
   constructor(private http: HttpClient) {}
+
+  /** Fetches all customers from `GET /api/customers` on component initialisation. */
   ngOnInit() {
     this.http.get<any[]>(`${environment.apiUrl}/api/customers`).subscribe(data => this.customers = data);
   }

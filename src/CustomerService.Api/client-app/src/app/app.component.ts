@@ -1,6 +1,12 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router';
 
+/**
+ * Root component for the Customer Service Angular SPA.
+ *
+ * Renders the top-level navigation bar with a link to the customer list
+ * page and hosts a `<router-outlet>` for child route views.
+ */
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -14,5 +20,6 @@ import { RouterOutlet, RouterLink } from '@angular/router';
   `
 })
 export class AppComponent {
+  /** Application title displayed in the navigation header. */
   title = 'Customer Service';
 }
