@@ -1,0 +1,84 @@
+name: Inventory Service - Build and Push to ECR
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'services/inventory-service/**'
+      - 'docker/inventory-service/**'
+      - 'helm/inventory-service/**'
+      - '.github/workflows/inventory-service-ci.yaml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'services/inventory-service/**'
+      - 'docker/inventory-service/**'
+      - 'helm/inventory-service/**'
+      - '.github/workflows/inventory-service-ci.yaml'
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: 599083837640.dkr.ecr.us-east-1.amazonaws.com
+  ECR_REPOSITORY: workshop/inventory-service
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        working-directory: services/inventory-service
+        run: dotnet restore InventoryService.sln
+
+      - name: Build
+        working-directory: services/inventory-service
+        run: dotnet build InventoryService.sln --no-restore
+
+      - name: Run tests
+        working-directory: services/inventory-service
+        run: dotnet test InventoryService.sln --no-build --verbosity normal
+
+      - name: Lint Helm chart
+        run: helm lint helm/inventory-service/
+
+  push-image:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::599083837640:role/github-actions-ecr-push
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker image
+        run: |
+          docker build -f docker/inventory-service/Dockerfile \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
