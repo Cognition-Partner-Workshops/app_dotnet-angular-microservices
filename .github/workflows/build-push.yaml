@@ -35,8 +35,8 @@ jobs:
 
   build-and-push:
     needs: build-and-test
-    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     permissions:
       id-token: write
       contents: read
@@ -61,7 +61,7 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-      - name: Trigger ArgoCD sync
+      - name: Trigger ArgoCD Sync
         run: |
           echo "Image pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          echo "ArgoCD will auto-sync from the Helm chart values"
+          echo "ArgoCD will auto-sync based on the image tag update"
