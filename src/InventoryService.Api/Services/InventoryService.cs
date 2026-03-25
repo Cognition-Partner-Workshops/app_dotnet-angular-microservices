@@ -69,15 +69,30 @@ public class InventoryItemService
         return true;
     }
 
-    /// <summary>Deducts stock and returns the updated item, or <c>null</c> if insufficient.</summary>
+    /// <summary>Deducts stock and returns the updated item.</summary>
     /// <param name="productId">The product identifier.</param>
     /// <param name="quantity">The quantity to deduct.</param>
-    public async Task<InventoryItem?> DeductStockAsync(int productId, int quantity)
+    /// <exception cref="ArgumentException">No inventory record for the product.</exception>
+    /// <exception cref="InvalidOperationException">Insufficient stock.</exception>
+    public async Task<InventoryItem> DeductStockAsync(int productId, int quantity)
     {
-        var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ProductId == productId);
-        if (item is null || item.QuantityOnHand < quantity) return null;
+        var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ProductId == productId)
+            ?? throw new ArgumentException($"No inventory record for product {productId}");
+
+        if (item.QuantityOnHand < quantity)
+            throw new InvalidOperationException($"Insufficient stock for product {productId}. Available: {item.QuantityOnHand}");
+
         item.QuantityOnHand -= quantity;
         await _context.SaveChangesAsync();
         return item;
+    }
+
+    /// <summary>Checks whether sufficient stock is available for a product (read-only).</summary>
+    /// <param name="productId">The product identifier.</param>
+    /// <param name="quantity">The quantity to check.</param>
+    public async Task<bool> CheckStockAsync(int productId, int quantity)
+    {
+        var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ProductId == productId);
+        return item is not null && item.QuantityOnHand >= quantity;
     }
 }

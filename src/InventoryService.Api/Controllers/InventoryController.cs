@@ -68,17 +68,40 @@ public class InventoryController : ControllerBase
     /// <summary>Deducts stock from an inventory item (called by the Order service during checkout).</summary>
     /// <param name="productId">The product identifier.</param>
     /// <param name="request">The deduction payload containing the quantity to remove.</param>
-    /// <response code="200">Stock deducted successfully.</response>
+    /// <response code="200">Stock deducted successfully. Returns the updated inventory item.</response>
+    /// <response code="404">No inventory record found for the given product ID.</response>
     /// <response code="409">Insufficient stock to fulfill the deduction.</response>
     [HttpPost("product/{productId}/deduct")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(InventoryItem), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> DeductStock(int productId, [FromBody] DeductRequest request)
     {
-        var success = await _inventoryService.CheckAndDeductStockAsync(productId, request.Quantity);
-        if (!success)
-            return Conflict(new { message = $"Insufficient stock for product {productId}" });
-        return Ok(new { message = "Stock deducted successfully" });
+        try
+        {
+            var item = await _inventoryService.DeductStockAsync(productId, request.Quantity);
+            return Ok(item);
+        }
+        catch (ArgumentException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>Check stock availability for a product (read-only).</summary>
+    /// <param name="productId">The product identifier.</param>
+    /// <param name="quantity">The quantity needed.</param>
+    /// <response code="200">Returns stock availability status.</response>
+    [HttpGet("product/{productId}/check")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> CheckStock(int productId, [FromQuery] int quantity)
+    {
+        var available = await _inventoryService.CheckStockAsync(productId, quantity);
+        return Ok(new { productId, quantity, available });
     }
 }
 

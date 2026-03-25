@@ -95,4 +95,55 @@ public class InventoryServiceTests
         var result = await service.CheckAndDeductStockAsync(1, 99999);
         Assert.False(result);
     }
+
+    [Fact]
+    public async Task DeductStockAsync_DecreasesQuantityAndReturnsItem()
+    {
+        using var context = CreateContext();
+        var service = new InventoryItemService(context);
+
+        var result = await service.DeductStockAsync(1, 10);
+
+        Assert.Equal(40, result.QuantityOnHand);
+    }
+
+    [Fact]
+    public async Task DeductStockAsync_ThrowsForInvalidProduct()
+    {
+        using var context = CreateContext();
+        var service = new InventoryItemService(context);
+
+        await Assert.ThrowsAsync<ArgumentException>(() => service.DeductStockAsync(999, 10));
+    }
+
+    [Fact]
+    public async Task DeductStockAsync_ThrowsForInsufficientStock()
+    {
+        using var context = CreateContext();
+        var service = new InventoryItemService(context);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.DeductStockAsync(1, 99999));
+    }
+
+    [Fact]
+    public async Task CheckStockAsync_ReturnsTrueWhenAvailable()
+    {
+        using var context = CreateContext();
+        var service = new InventoryItemService(context);
+
+        var result = await service.CheckStockAsync(1, 10);
+
+        Assert.True(result);
+    }
+
+    [Fact]
+    public async Task CheckStockAsync_ReturnsFalseWhenInsufficient()
+    {
+        using var context = CreateContext();
+        var service = new InventoryItemService(context);
+
+        var result = await service.CheckStockAsync(1, 99999);
+
+        Assert.False(result);
+    }
 }
