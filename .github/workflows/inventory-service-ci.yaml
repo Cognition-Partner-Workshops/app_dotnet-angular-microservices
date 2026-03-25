@@ -5,10 +5,12 @@ on:
     branches: [main]
     paths:
       - 'services/inventory-service/**'
+      - 'infrastructure/inventory-service/**'
   pull_request:
     branches: [main]
     paths:
       - 'services/inventory-service/**'
+      - 'infrastructure/inventory-service/**'
 
 env:
   AWS_REGION: us-east-1
@@ -24,7 +26,7 @@ jobs:
         working-directory: services/inventory-service
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup .NET
@@ -50,7 +52,7 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Configure AWS credentials
@@ -66,6 +68,8 @@ jobs:
       - name: Build and push Docker image
         working-directory: services/inventory-service
         run: |
-          docker build -f docker/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker build -f infrastructure/inventory-service/docker/Dockerfile \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
