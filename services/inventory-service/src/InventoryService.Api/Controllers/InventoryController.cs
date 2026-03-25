@@ -38,12 +38,12 @@ public class InventoryController : ControllerBase
         }
     }
 
-    [HttpPost("product/{productId}/decrement")]
-    public async Task<IActionResult> Decrement(int productId, [FromBody] DecrementRequest request)
+    [HttpPost("product/{productId}/deduct")]
+    public async Task<IActionResult> Deduct(int productId, [FromBody] DeductRequest request)
     {
         try
         {
-            var item = await _inventoryService.DecrementStockAsync(productId, request.Quantity);
+            var item = await _inventoryService.DeductStockAsync(productId, request.Quantity);
             return Ok(item);
         }
         catch (ArgumentException ex)
@@ -61,4 +61,4 @@ public class InventoryController : ControllerBase
 }
 
 public record RestockRequest(int Quantity);
-public record DecrementRequest(int Quantity);
+public record DeductRequest(int Quantity);

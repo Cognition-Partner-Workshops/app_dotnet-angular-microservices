@@ -33,7 +33,7 @@ public class InventoryItemService
         return item;
     }
 
-    public async Task<InventoryItem> DecrementStockAsync(int productId, int quantity)
+    public async Task<InventoryItem> DeductStockAsync(int productId, int quantity)
     {
         var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ProductId == productId)
             ?? throw new ArgumentException($"No inventory record for product {productId}");

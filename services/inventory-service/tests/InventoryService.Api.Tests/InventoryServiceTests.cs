@@ -66,21 +66,21 @@ public class InventoryServiceTests
     }
 
     [Fact]
-    public async Task DecrementStock_DecreasesQuantity()
+    public async Task DeductStock_DecreasesQuantity()
     {
         using var context = CreateContext();
         var service = new InventoryItemService(context);
-        var result = await service.DecrementStockAsync(1, 10);
+        var result = await service.DeductStockAsync(1, 10);
         Assert.Equal(40, result.QuantityOnHand);
     }
 
     [Fact]
-    public async Task DecrementStock_ThrowsOnInsufficientStock()
+    public async Task DeductStock_ThrowsOnInsufficientStock()
     {
         using var context = CreateContext();
         var service = new InventoryItemService(context);
         await Assert.ThrowsAsync<InvalidOperationException>(
-            () => service.DecrementStockAsync(1, 100));
+            () => service.DeductStockAsync(1, 100));
     }
 
     [Fact]
