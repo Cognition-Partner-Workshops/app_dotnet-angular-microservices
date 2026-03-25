@@ -15,6 +15,9 @@ env:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/inventory-service
 
     steps:
       - name: Checkout code
@@ -36,8 +39,8 @@ jobs:
 
   build-and-push:
     needs: build-and-test
-    runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
@@ -65,4 +68,4 @@ jobs:
       - name: Trigger ArgoCD sync
         run: |
           echo "Image pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          echo "ArgoCD will auto-sync via the automated sync policy"
+          echo "ArgoCD will auto-sync based on the image tag update"

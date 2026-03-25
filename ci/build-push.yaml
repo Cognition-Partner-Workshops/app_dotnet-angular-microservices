@@ -1,16 +1,10 @@
-name: Inventory Service — Build and Push to ECR
+name: Build and Push to ECR
 
 on:
   push:
     branches: [main]
-    paths:
-      - 'services/inventory-service/**'
-      - 'infrastructure/inventory-service/**'
   pull_request:
     branches: [main]
-    paths:
-      - 'services/inventory-service/**'
-      - 'infrastructure/inventory-service/**'
 
 env:
   AWS_REGION: us-east-1
@@ -19,14 +13,14 @@ env:
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
-  build-and-test:
+  build-and-push:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: services/inventory-service
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup .NET
@@ -43,33 +37,21 @@ jobs:
       - name: Run tests
         run: dotnet test --no-build --configuration Release --verbosity normal
 
-  build-and-push:
-    needs: build-and-test
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Configure AWS credentials
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::599083837640:role/github-actions-ecr-push
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and push Docker image
-        working-directory: services/inventory-service
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
-          docker build -f infrastructure/inventory-service/docker/Dockerfile \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker build -f docker/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
