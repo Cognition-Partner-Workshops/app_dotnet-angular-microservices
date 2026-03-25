@@ -1,4 +1,4 @@
-name: Build and Push to ECR
+name: Inventory Service CI/CD
 
 on:
   push:
@@ -25,7 +25,6 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        working-directory: services/inventory-service
         run: dotnet restore
 
       - name: Build
@@ -36,33 +35,7 @@ jobs:
 
   build-and-push:
     needs: build-and-test
-    runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --no-restore --configuration Release
-
-      - name: Run tests
-        run: dotnet test --no-build --configuration Release --verbosity normal
-
-  build-and-push:
-    needs: build-and-test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -88,7 +61,23 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-      - name: Trigger ArgoCD sync
+  deploy-dev:
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger ArgoCD sync for dev
         run: |
-          echo "Image pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          echo "ArgoCD will automatically detect the change and sync."
+          echo "ArgoCD will auto-sync from the helm/inventory-service chart with values-dev.yaml"
+          echo "Image tag: ${{ env.IMAGE_TAG }}"
+
+  deploy-staging:
+    needs: deploy-dev
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Trigger ArgoCD sync for staging
+        run: |
+          echo "ArgoCD will auto-sync from the helm/inventory-service chart with values-staging.yaml"
+          echo "Image tag: ${{ env.IMAGE_TAG }}"
