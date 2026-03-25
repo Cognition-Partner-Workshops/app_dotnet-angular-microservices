@@ -1,50 +1,46 @@
-name: Inventory Service CI/CD
+name: Build and Push Inventory Service
 
 on:
   push:
     branches: [main]
-    paths:
-      - 'services/inventory-service/**'
   pull_request:
     branches: [main]
-    paths:
-      - 'services/inventory-service/**'
 
 env:
   AWS_REGION: us-east-1
   ECR_REGISTRY: 599083837640.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: workshop/inventory-service
   IMAGE_TAG: ${{ github.sha }}
-  SERVICE_PATH: services/inventory-service
 
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/inventory-service
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup .NET
+      - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        working-directory: ${{ env.SERVICE_PATH }}
         run: dotnet restore
 
       - name: Build
-        working-directory: ${{ env.SERVICE_PATH }}
-        run: dotnet build --no-restore
+        run: dotnet build --no-restore --configuration Release
 
       - name: Run tests
-        working-directory: ${{ env.SERVICE_PATH }}
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --no-build --configuration Release --verbosity normal
 
   build-and-push:
-    needs: test
-    runs-on: ubuntu-latest
+    needs: build-and-test
     if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
@@ -64,7 +60,6 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and push Docker image
-        working-directory: ${{ env.SERVICE_PATH }}
         run: |
           docker build -f docker/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
@@ -73,4 +68,4 @@ jobs:
       - name: Trigger ArgoCD sync
         run: |
           echo "Image pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          echo "ArgoCD will auto-sync from the helm chart values"
+          echo "ArgoCD will auto-sync based on the image tag update"
