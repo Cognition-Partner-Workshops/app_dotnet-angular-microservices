@@ -15,11 +15,22 @@ This microservice owns the **Inventory** bounded context, extracted from the mon
 | `/api/inventory/low-stock` | GET | List items at or below reorder level |
 | `/health` | GET | Health check |
 
+## OpenAPI / Swagger
+
+Interactive API documentation is available at runtime:
+
+| Resource | URL |
+|----------|-----|
+| Swagger UI | `/swagger/index.html` |
+| OpenAPI JSON | `/swagger/v1/swagger.json` |
+
+All controllers, models, and DTOs include XML documentation comments that are automatically surfaced in the Swagger UI. The `GenerateDocumentationFile` MSBuild property is enabled in the `.csproj` so the XML docs are included at build time.
+
 ## Tech Stack
 
 - **Backend**: .NET 8, C#, Entity Framework Core, SQLite
 - **Frontend**: Angular 17, TypeScript
-- **API**: RESTful with Swagger/OpenAPI
+- **API**: RESTful with Swagger/OpenAPI (XML doc comments included)
 
 ## Getting Started
 

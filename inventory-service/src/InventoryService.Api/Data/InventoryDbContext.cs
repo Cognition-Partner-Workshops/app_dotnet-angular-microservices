@@ -3,10 +3,15 @@ using InventoryService.Api.Models;
 
 namespace InventoryService.Api.Data;
 
+/// <summary>
+/// EF Core database context scoped to inventory data only.
+/// Uses SQLite for lightweight, single-service persistence.
+/// </summary>
 public class InventoryDbContext : DbContext
 {
     public InventoryDbContext(DbContextOptions<InventoryDbContext> options) : base(options) { }
 
+    /// <summary>Inventory stock records.</summary>
     public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
