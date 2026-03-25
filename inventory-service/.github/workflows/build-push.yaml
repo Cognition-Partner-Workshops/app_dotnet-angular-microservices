@@ -1,10 +1,14 @@
-name: Build and Push to ECR
+name: Build and Push Inventory Service
 
 on:
   push:
     branches: [main]
+    paths:
+      - 'inventory-service/**'
   pull_request:
     branches: [main]
+    paths:
+      - 'inventory-service/**'
 
 env:
   AWS_REGION: us-east-1
@@ -13,11 +17,11 @@ env:
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
-  build-and-push:
+  build-and-test:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
+    defaults:
+      run:
+        working-directory: inventory-service
 
     steps:
       - name: Checkout code
@@ -28,24 +32,45 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Run .NET tests
-        run: dotnet test --verbosity normal
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test --no-build --configuration Release --verbosity normal
+
+  build-and-push:
+    needs: build-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Configure AWS credentials
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::599083837640:role/github-actions-ecr-push
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and push Docker image
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        working-directory: inventory-service
         run: |
           docker build -f docker/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Trigger ArgoCD sync
+        run: |
+          echo "ArgoCD will auto-sync from the repository based on the syncPolicy configuration."
+          echo "Image tag: $IMAGE_TAG"
