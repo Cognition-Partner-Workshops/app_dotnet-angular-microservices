@@ -4,8 +4,12 @@ using InventoryService.Api.Services;
 
 namespace InventoryService.Api.Controllers;
 
+/// <summary>
+/// Manages inventory items including stock levels, restocking, deductions, and low-stock alerts.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Produces("application/json")]
 public class InventoryController : ControllerBase
 {
     private readonly InventoryItemService _inventoryService;
@@ -15,17 +19,33 @@ public class InventoryController : ControllerBase
         _inventoryService = inventoryService;
     }
 
+    /// <summary>Retrieves all inventory items.</summary>
+    /// <response code="200">Returns the full list of inventory items.</response>
     [HttpGet]
+    [ProducesResponseType(typeof(List<InventoryItem>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll() => Ok(await _inventoryService.GetAllInventoryAsync());
 
+    /// <summary>Retrieves the inventory record for a specific product.</summary>
+    /// <param name="productId">The product identifier.</param>
+    /// <response code="200">Returns the inventory item.</response>
+    /// <response code="404">No inventory record for the given product.</response>
     [HttpGet("product/{productId}")]
+    [ProducesResponseType(typeof(InventoryItem), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByProduct(int productId)
     {
         var item = await _inventoryService.GetInventoryByProductIdAsync(productId);
         return item is null ? NotFound() : Ok(item);
     }
 
+    /// <summary>Restocks an inventory item by adding the specified quantity.</summary>
+    /// <param name="productId">The product identifier to restock.</param>
+    /// <param name="request">The restock payload containing the quantity to add.</param>
+    /// <response code="200">Returns the updated inventory item.</response>
+    /// <response code="400">No inventory record for the given product.</response>
     [HttpPost("product/{productId}/restock")]
+    [ProducesResponseType(typeof(InventoryItem), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Restock(int productId, [FromBody] RestockRequest request)
     {
         try
@@ -39,28 +59,8 @@ public class InventoryController : ControllerBase
         }
     }
 
-    [HttpGet("low-stock")]
-    public async Task<IActionResult> GetLowStock() => Ok(await _inventoryService.GetLowStockItemsAsync());
-
-    [HttpPost("product/{productId}/decrement")]
-    public async Task<IActionResult> Decrement(int productId, [FromBody] DecrementRequest request)
-    {
-        try
-        {
-            var item = await _inventoryService.DecrementStockAsync(productId, request.Quantity);
-            return item is null ? NotFound() : Ok(item);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Conflict(new { error = ex.Message });
-        }
-    }
-    /// <summary>Deducts stock from an inventory item (called by the monolith Order service).</summary>
     [HttpPost("product/{productId}/deduct")]
-    [ProducesResponseType(typeof(InventoryItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> DeductStock(int productId, [FromBody] DeductRequest request)
+    public async Task<IActionResult> Deduct(int productId, [FromBody] DeductRequest request)
     {
         try
         {
@@ -77,6 +77,12 @@ public class InventoryController : ControllerBase
         }
     }
 
+    /// <summary>Retrieves all inventory items at or below their reorder level.</summary>
+    /// <response code="200">Returns the list of low-stock items.</response>
+    [HttpGet("low-stock")]
+    [ProducesResponseType(typeof(List<InventoryItem>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetLowStock() => Ok(await _inventoryService.GetLowStockItemsAsync());
+
     /// <summary>Checks whether sufficient stock is available for a product (read-only).</summary>
     [HttpGet("product/{productId}/check")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -91,6 +97,10 @@ public class InventoryController : ControllerBase
     }
 }
 
+/// <summary>Request body for restocking an inventory item.</summary>
+/// <param name="Quantity">The quantity to add to the current stock.</param>
 public record RestockRequest(int Quantity);
-public record DecrementRequest(int Quantity);
+
+/// <summary>Request body for deducting stock from an inventory item.</summary>
+/// <param name="Quantity">The quantity to deduct from the current stock.</param>
 public record DeductRequest(int Quantity);
