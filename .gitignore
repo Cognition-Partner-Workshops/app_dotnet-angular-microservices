@@ -1,0 +1,41 @@
+# ─── macOS ───────────────────────────────────────────────────────────────────
+.DS_Store
+*.swp
+*.swo
+*~
+
+# ─── IDE ─────────────────────────────────────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+
+# ─── iOS ─────────────────────────────────────────────────────────────────────
+ios/.build/
+ios/DerivedData/
+ios/*.xcodeproj/xcuserdata/
+ios/*.xcworkspace/xcuserdata/
+ios/Pods/
+ios/*.pbxuser
+ios/*.mode1v3
+ios/*.mode2v3
+ios/*.perspectivev3
+ios/xcuserdata/
+
+# ─── Android ─────────────────────────────────────────────────────────────────
+android/.gradle/
+android/build/
+android/*/build/
+android/*/*/build/
+android/local.properties
+android/*.apk
+android/*.aab
+android/captures/
+android/.externalNativeBuild/
+android/.cxx/
+
+# ─── Secrets ─────────────────────────────────────────────────────────────────
+*.env
+*.env.local
+credentials.json
+google-services.json
+GoogleService-Info.plist
