@@ -159,7 +159,7 @@ app_dotnet-angular-microservices/
 └── docs/openapi-spec.yaml    # Static OpenAPI specification
 ```
 
-## Infrastructure
+## API Reference
 
 ### Docker
 

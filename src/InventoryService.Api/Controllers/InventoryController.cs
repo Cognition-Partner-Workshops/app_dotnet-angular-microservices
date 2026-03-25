@@ -5,6 +5,9 @@ using InventoryService.Api.Services;
 
 namespace InventoryService.Api.Controllers;
 
+/// <summary>
+/// Manages inventory items including stock levels, restocking, deductions, and low-stock alerts.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
