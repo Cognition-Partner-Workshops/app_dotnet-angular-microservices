@@ -92,4 +92,44 @@ public class InventoryController : ControllerBase
 
         return Ok(new { reserved = true, productId, quantity = request.Quantity });
     }
+
+    /// <summary>Deduct stock for a product (used by Order service).</summary>
+    /// <param name="productId">The product ID to deduct stock from.</param>
+    /// <param name="request">The deduct request containing the quantity to remove.</param>
+    /// <returns>The updated inventory item after deduction.</returns>
+    /// <response code="200">Stock successfully deducted. Returns the updated inventory item.</response>
+    /// <response code="404">No inventory record found for the given product ID.</response>
+    /// <response code="409">Insufficient stock to fulfill the deduction.</response>
+    [HttpPost("product/{productId}/deduct")]
+    [ProducesResponseType(typeof(InventoryItem), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> DeductStock(int productId, [FromBody] DeductRequest request)
+    {
+        try
+        {
+            var item = await _inventoryService.DeductStockAsync(productId, request.Quantity);
+            return Ok(item);
+        }
+        catch (ArgumentException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>Check stock availability for a product.</summary>
+    /// <param name="productId">The product ID to check.</param>
+    /// <param name="quantity">The quantity needed.</param>
+    /// <response code="200">Returns stock availability status.</response>
+    [HttpGet("product/{productId}/check")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> CheckStock(int productId, [FromQuery] int quantity)
+    {
+        var available = await _inventoryService.CheckStockAsync(productId, quantity);
+        return Ok(new { productId, quantity, available });
+    }
 }
