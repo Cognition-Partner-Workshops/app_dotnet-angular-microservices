@@ -1,37 +1,28 @@
-name: "Inventory Service: Build and Push to ECR"
+name: Inventory Service CI/CD
 
 on:
   push:
     branches: [main]
-    paths:
-      - "services/inventory-service/**"
   pull_request:
     branches: [main]
-    paths:
-      - "services/inventory-service/**"
 
 env:
   AWS_REGION: us-east-1
   ECR_REGISTRY: 599083837640.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: workshop/inventory-service
   IMAGE_TAG: ${{ github.sha }}
-  SERVICE_DIR: services/inventory-service
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: services/inventory-service
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup .NET 8
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "8.0.x"
+          dotnet-version: '8.0.x'
 
       - name: Restore dependencies
         run: dotnet restore
@@ -65,13 +56,28 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and push Docker image
-        working-directory: services/inventory-service
         run: |
           docker build -f docker/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-      - name: Trigger ArgoCD sync
+  deploy-dev:
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger ArgoCD sync for dev
         run: |
-          echo "Image pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          echo "ArgoCD will auto-sync from the helm chart in this repo."
+          echo "ArgoCD will auto-sync from the helm/inventory-service chart with values-dev.yaml"
+          echo "Image tag: ${{ env.IMAGE_TAG }}"
+
+  deploy-staging:
+    needs: deploy-dev
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Trigger ArgoCD sync for staging
+        run: |
+          echo "ArgoCD will auto-sync from the helm/inventory-service chart with values-staging.yaml"
+          echo "Image tag: ${{ env.IMAGE_TAG }}"
