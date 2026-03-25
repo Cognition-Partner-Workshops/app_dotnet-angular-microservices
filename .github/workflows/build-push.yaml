@@ -1,4 +1,4 @@
-name: Build and Push to ECR
+name: Build and Push Inventory Service to ECR
 
 on:
   push:
@@ -75,3 +75,8 @@ jobs:
           docker build -f docker/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Trigger ArgoCD sync
+        run: |
+          echo "Image pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo "ArgoCD will auto-sync from the helm chart values"
