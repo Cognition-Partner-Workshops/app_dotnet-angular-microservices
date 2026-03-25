@@ -1,12 +1,9 @@
-## .NET
 bin/
 obj/
 *.db
 *.user
 *.suo
 .vs/
-
-## Node
 node_modules/
 dist/
 .angular/
