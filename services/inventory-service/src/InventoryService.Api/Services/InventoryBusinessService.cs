@@ -4,11 +4,11 @@ using InventoryService.Api.Models;
 
 namespace InventoryService.Api.Services;
 
-public class InventoryItemService
+public class InventoryBusinessService
 {
     private readonly InventoryDbContext _context;
 
-    public InventoryItemService(InventoryDbContext context)
+    public InventoryBusinessService(InventoryDbContext context)
     {
         _context = context;
     }
@@ -37,10 +37,8 @@ public class InventoryItemService
     {
         var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ProductId == productId)
             ?? throw new ArgumentException($"No inventory record for product {productId}");
-
         if (item.QuantityOnHand < quantity)
             throw new InvalidOperationException($"Insufficient stock for product {productId}. Available: {item.QuantityOnHand}");
-
         item.QuantityOnHand -= quantity;
         await _context.SaveChangesAsync();
         return item;
@@ -51,5 +49,11 @@ public class InventoryItemService
         return await _context.InventoryItems
             .Where(i => i.QuantityOnHand <= i.ReorderLevel)
             .ToListAsync();
+    }
+
+    public async Task<bool> CheckStockAsync(int productId, int quantity)
+    {
+        var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ProductId == productId);
+        return item is not null && item.QuantityOnHand >= quantity;
     }
 }

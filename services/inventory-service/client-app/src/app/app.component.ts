@@ -1,13 +1,16 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, RouterLink],
   template: `
     <nav>
       <h1>Inventory Service</h1>
+      <a routerLink="/inventory">All Inventory</a>
+      <a routerLink="/low-stock">Low Stock Alerts</a>
+      <a routerLink="/restock">Restock</a>
     </nav>
     <router-outlet></router-outlet>
   `

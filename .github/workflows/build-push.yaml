@@ -1,4 +1,4 @@
-name: Build and Push to ECR
+name: Build, Test, and Push Inventory Service
 
 on:
   push:
@@ -13,7 +13,7 @@ env:
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -34,9 +34,9 @@ jobs:
         run: dotnet test --no-build --configuration Release --verbosity normal
 
   build-and-push:
-    needs: build-and-test
+    needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       id-token: write
       contents: read
@@ -57,14 +57,13 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -f docker/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
-
-      - name: Push Docker image
-        run: |
+          docker build -f docker/Dockerfile \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
       - name: Trigger ArgoCD sync
         run: |
           echo "Image pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          echo "ArgoCD will auto-sync based on the image tag update"
+          echo "ArgoCD will auto-sync via automated sync policy"
