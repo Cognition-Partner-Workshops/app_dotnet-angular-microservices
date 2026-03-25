@@ -48,7 +48,4 @@ public class InventoryController : ControllerBase
         var response = await _inventoryService.CheckAndReserveStockAsync(request);
         return response.Success ? Ok(response) : BadRequest(response);
     }
-
-    [HttpGet("low-stock")]
-    public async Task<IActionResult> GetLowStock() => Ok(await _inventoryService.GetLowStockItemsAsync());
 }
