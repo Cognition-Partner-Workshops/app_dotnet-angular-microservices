@@ -4,14 +4,26 @@ obj/
 *.db
 *.user
 *.suo
-.vs/
+*.cache
+*.db-journal
 
-## Node
+## Angular
+client-app/node_modules/
 node_modules/
 dist/
 .angular/
+
+## Build output
+**/wwwroot/
+
+## Config
+appsettings.Development.json
 
 ## IDE
 .idea/
 .vscode/
 *.swp
+
+## OS
+.DS_Store
+Thumbs.db
