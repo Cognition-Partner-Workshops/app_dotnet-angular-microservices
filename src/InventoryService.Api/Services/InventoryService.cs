@@ -40,6 +40,12 @@ public class InventoryItemService
             .ToListAsync();
     }
 
+    public async Task<bool> CheckStockAsync(int productId, int quantity)
+    {
+        var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ProductId == productId);
+        return item is not null && item.QuantityOnHand >= quantity;
+    }
+
     public async Task<bool> CheckAndDeductStockAsync(int productId, int quantity)
     {
         var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ProductId == productId);
