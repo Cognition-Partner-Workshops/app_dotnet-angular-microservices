@@ -13,11 +13,8 @@ env:
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: services/inventory-service
 
     steps:
       - name: Checkout code
@@ -29,18 +26,23 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
+        working-directory: services/inventory-service
         run: dotnet restore
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        working-directory: services/inventory-service
+        run: dotnet build --no-restore
 
       - name: Run tests
-        run: dotnet test --no-build --configuration Release --verbosity normal
+        working-directory: services/inventory-service
+        run: dotnet test --no-build --verbosity normal
 
   build-and-push:
-    needs: build-and-test
+    needs: test
+    runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     permissions:
       id-token: write
       contents: read
@@ -68,4 +70,4 @@ jobs:
       - name: Trigger ArgoCD sync
         run: |
           echo "Image pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          echo "ArgoCD will auto-sync based on the image tag update"
+          echo "ArgoCD will auto-sync via the automated sync policy"
