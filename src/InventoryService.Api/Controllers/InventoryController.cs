@@ -5,7 +5,7 @@ using InventoryService.Api.Services;
 namespace InventoryService.Api.Controllers;
 
 /// <summary>
-/// Manages warehouse inventory — stock queries, restocking, deductions, and low-stock alerts.
+/// Manages inventory items including stock levels, restocking, deductions, and low-stock alerts.
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
@@ -19,16 +19,16 @@ public class InventoryController : ControllerBase
         _inventoryService = inventoryService;
     }
 
-    /// <summary>Returns every inventory record.</summary>
-    /// <response code="200">List of all inventory items.</response>
+    /// <summary>Retrieves all inventory items.</summary>
+    /// <response code="200">Returns the full list of inventory items.</response>
     [HttpGet]
     [ProducesResponseType(typeof(List<InventoryItem>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll() => Ok(await _inventoryService.GetAllInventoryAsync());
 
-    /// <summary>Returns the inventory record for a specific product.</summary>
+    /// <summary>Retrieves the inventory record for a specific product.</summary>
     /// <param name="productId">The product identifier.</param>
-    /// <response code="200">The inventory item.</response>
-    /// <response code="404">No inventory record exists for this product.</response>
+    /// <response code="200">Returns the inventory item.</response>
+    /// <response code="404">No inventory record for the given product.</response>
     [HttpGet("product/{productId}")]
     [ProducesResponseType(typeof(InventoryItem), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -38,14 +38,14 @@ public class InventoryController : ControllerBase
         return item is null ? NotFound() : Ok(item);
     }
 
-    /// <summary>Adds stock to a product's inventory.</summary>
-    /// <param name="productId">The product identifier.</param>
-    /// <param name="request">Restock details including quantity to add.</param>
-    /// <response code="200">Updated inventory item after restocking.</response>
-    /// <response code="404">No inventory record exists for this product.</response>
+    /// <summary>Restocks an inventory item by adding the specified quantity.</summary>
+    /// <param name="productId">The product identifier to restock.</param>
+    /// <param name="request">The restock payload containing the quantity to add.</param>
+    /// <response code="200">Returns the updated inventory item.</response>
+    /// <response code="400">No inventory record for the given product.</response>
     [HttpPost("product/{productId}/restock")]
     [ProducesResponseType(typeof(InventoryItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Restock(int productId, [FromBody] RestockRequest request)
     {
         try
@@ -55,52 +55,42 @@ public class InventoryController : ControllerBase
         }
         catch (ArgumentException ex)
         {
-            return NotFound(new { error = ex.Message });
+            return BadRequest(new { error = ex.Message });
         }
     }
 
-    /// <summary>Deducts stock from a product's inventory (called during order fulfillment).</summary>
-    /// <param name="productId">The product identifier.</param>
-    /// <param name="request">Deduction details including quantity to remove.</param>
-    /// <response code="200">Updated inventory item after deduction.</response>
-    /// <response code="404">No inventory record exists for this product.</response>
-    /// <response code="409">Insufficient stock available for the requested deduction.</response>
-    [HttpPost("product/{productId}/deduct")]
-    [ProducesResponseType(typeof(InventoryItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> Deduct(int productId, [FromBody] DeductRequest request)
-    {
-        try
-        {
-            var item = await _inventoryService.DeductStockAsync(productId, request.Quantity);
-            return Ok(item);
-        }
-        catch (ArgumentException ex)
-        {
-            return NotFound(new { error = ex.Message });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Conflict(new { error = ex.Message });
-        }
-    }
-
-    /// <summary>Returns inventory items whose quantity on hand is at or below the reorder level.</summary>
-    /// <response code="200">List of low-stock inventory items.</response>
+    /// <summary>Retrieves all inventory items at or below their reorder level.</summary>
+    /// <response code="200">Returns the list of low-stock items.</response>
     [HttpGet("low-stock")]
     [ProducesResponseType(typeof(List<InventoryItem>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetLowStock() => Ok(await _inventoryService.GetLowStockItemsAsync());
+
+    /// <summary>Deducts stock from an inventory item (called by the Order service during checkout).</summary>
+    /// <param name="productId">The product identifier.</param>
+    /// <param name="request">The deduction payload containing the quantity to remove.</param>
+    /// <response code="200">Stock deducted successfully.</response>
+    /// <response code="409">Insufficient stock to fulfill the deduction.</response>
+    [HttpPost("product/{productId}/deduct")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> DeductStock(int productId, [FromBody] DeductRequest request)
+    {
+        var item = await _inventoryService.GetInventoryByProductIdAsync(productId);
+        if (item is null)
+            return NotFound(new { error = $"No inventory record for product {productId}" });
+
+        var result = await _inventoryService.DeductStockAsync(productId, request.Quantity);
+        if (result is null)
+            return Conflict(new { error = $"Insufficient stock for product {productId}. Available: {item.QuantityOnHand}, Requested: {request.Quantity}" });
+
+        return Ok(result);
+    }
 }
 
-/// <summary>Request payload for restocking inventory.</summary>
-/// <param name="Quantity">Number of units to add to current stock.</param>
+/// <summary>Request body for restocking an inventory item.</summary>
+/// <param name="Quantity">The quantity to add to the current stock.</param>
 public record RestockRequest(int Quantity);
 
-/// <summary>Request payload for deducting inventory.</summary>
-/// <param name="Quantity">Number of units to remove from current stock.</param>
+/// <summary>Request body for deducting stock from an inventory item.</summary>
+/// <param name="Quantity">The quantity to deduct from the current stock.</param>
 public record DeductRequest(int Quantity);
-
-/// <summary>Request payload for reserving inventory.</summary>
-/// <param name="Quantity">Number of units to reserve.</param>
-public record ReserveRequest(int Quantity);

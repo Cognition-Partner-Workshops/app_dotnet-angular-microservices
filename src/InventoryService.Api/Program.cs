@@ -21,23 +21,20 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "Inventory Service API",
         Version = "v1",
-        Description = "Microservice responsible for warehouse inventory management — stock levels, restocking, deductions, and low-stock alerts. Extracted from the OrderManager monolith.",
-        Contact = new OpenApiContact
-        {
-            Name = "Platform Engineering",
-            Url = new Uri("https://github.com/Cognition-Partner-Workshops/app_dotnet-angular-microservices")
-        },
-        License = new OpenApiLicense { Name = "MIT" }
+        Description = "Microservice responsible for inventory management including stock levels, " +
+                      "warehouse locations, restocking, deductions, and low-stock alerts. " +
+                      "Decomposed from the OrderManager monolith.",
+        Contact = new OpenApiContact { Name = "Platform Team" }
     });
-
-    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
     if (File.Exists(xmlPath))
         options.IncludeXmlComments(xmlPath);
 });
-
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
@@ -51,11 +48,11 @@ app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "Inventory Service API v1");
-    options.DocumentTitle = "Inventory Service — Swagger UI";
+    options.RoutePrefix = "swagger";
 });
 app.UseCors();
 app.UseStaticFiles();
 app.MapControllers();
-app.MapGet("/health", () => Results.Ok(new { status = "Healthy" }));
+app.MapHealthChecks("/health");
 app.MapFallbackToFile("index.html");
 app.Run();

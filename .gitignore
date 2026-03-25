@@ -1,24 +1,22 @@
+## .NET
 bin/
 obj/
 *.user
 *.suo
-*.cache
-*.dll
-*.pdb
-*.db
+.vs/
 
 ## Node
 node_modules/
 dist/
+.angular/
 
 ## IDE
-.idea/
+.vs/
 .vscode/
+.idea/
 *.swp
+*.swo
 
 ## OS
 .DS_Store
 Thumbs.db
-
-## Build output
-wwwroot/

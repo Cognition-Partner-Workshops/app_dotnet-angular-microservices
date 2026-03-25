@@ -20,9 +20,9 @@ spec:
         - protocol: TCP
           port: {{ .Values.service.targetPort }}
     - from:
-        - podSelector:
+        - namespaceSelector:
             matchLabels:
-              app.kubernetes.io/name: ordermanager
+              kubernetes.io/metadata.name: {{ .Release.Namespace }}
       ports:
         - protocol: TCP
           port: {{ .Values.service.targetPort }}
