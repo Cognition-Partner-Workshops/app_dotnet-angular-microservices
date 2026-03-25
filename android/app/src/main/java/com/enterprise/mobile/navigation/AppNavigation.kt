@@ -3,6 +3,7 @@ package com.enterprise.mobile.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.Star
@@ -27,19 +28,37 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.enterprise.core.domain.entities.BottomNavBarConfig
+import com.enterprise.core.domain.entities.BottomNavTab
 import com.enterprise.feature.aiconnect.presentation.AIConnectScreen
 import com.enterprise.feature.explore.presentation.DynamicFeedScreen
+import com.enterprise.feature.explore.presentation.ExploreViewModel
 import com.enterprise.feature.rewards.presentation.RewardsScreen
 import com.enterprise.feature.shop.presentation.CartScreen
 
-/** Root navigation: Bottom Tab Bar with Explore, Shop, Account, Rewards, AI Connect. */
+/**
+ * Root navigation: CMS-driven Bottom Tab Bar.
+ * Reads tab config from ExploreViewModel's CMS state; falls back to hardcoded tabs.
+ */
 @Composable
 fun AppNavigation(
     onDeepLink: (String) -> Unit = {}
 ) {
     val navController = rememberNavController()
 
-    val tabs = listOf(
+    // CMS-driven bottom nav: ViewModel exposes the config loaded from mock JSON
+    val exploreViewModel: ExploreViewModel = hiltViewModel()
+    val exploreState by exploreViewModel.state.collectAsState()
+
+    // Resolve tabs: CMS config if available, otherwise hardcoded fallback
+    val tabs = exploreState.bottomNavBar?.tabs?.map { tab ->
+        TabItem(
+            route = tab.route,
+            label = tab.label,
+            icon = iconForTabId(tab.id),
+            badgeCount = tab.badgeCount
+        )
+    } ?: listOf(
         TabItem("explore", "Explore", Icons.Default.Explore),
         TabItem("shop", "Shop", Icons.Default.ShoppingBag),
         TabItem("account", "My Account", Icons.Default.AccountCircle),
@@ -56,10 +75,23 @@ fun AppNavigation(
                 tabs.forEach { tab ->
                     NavigationBarItem(
                         icon = {
-                            Icon(
-                                imageVector = tab.icon,
-                                contentDescription = tab.label
-                            )
+                            if (tab.badgeCount > 0) {
+                                BadgedBox(
+                                    badge = {
+                                        Badge { Text(tab.badgeCount.toString()) }
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = tab.icon,
+                                        contentDescription = tab.label
+                                    )
+                                }
+                            } else {
+                                Icon(
+                                    imageVector = tab.icon,
+                                    contentDescription = tab.label
+                                )
+                            }
                         },
                         label = { Text(tab.label) },
                         selected = currentDestination?.hierarchy?.any { it.route == tab.route } == true,
@@ -106,5 +138,15 @@ fun AppNavigation(
 private data class TabItem(
     val route: String,
     val label: String,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val badgeCount: Int = 0
 )
+
+private fun iconForTabId(id: String): ImageVector = when (id) {
+    "explore" -> Icons.Default.Explore
+    "shop" -> Icons.Default.ShoppingBag
+    "account" -> Icons.Default.AccountCircle
+    "rewards" -> Icons.Default.Star
+    "aiconnect" -> Icons.Default.ChatBubble
+    else -> Icons.Default.Explore
+}

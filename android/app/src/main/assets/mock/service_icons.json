@@ -1,0 +1,28 @@
+{
+  "icons": [
+    {
+      "id": "svc-bill",
+      "icon_url": "https://img.icons8.com/fluency/96/bill.png",
+      "label": "Bill",
+      "deep_link": "app://account/bill"
+    },
+    {
+      "id": "svc-usage",
+      "icon_url": "https://img.icons8.com/fluency/96/combo-chart.png",
+      "label": "Usage",
+      "deep_link": "app://account/usage"
+    },
+    {
+      "id": "svc-lines",
+      "icon_url": "https://img.icons8.com/fluency/96/smartphone-tablet.png",
+      "label": "Manage Lines",
+      "deep_link": "app://account/lines"
+    },
+    {
+      "id": "svc-plan",
+      "icon_url": "https://img.icons8.com/fluency/96/change.png",
+      "label": "Change Plan",
+      "deep_link": "app://account/plan"
+    }
+  ]
+}

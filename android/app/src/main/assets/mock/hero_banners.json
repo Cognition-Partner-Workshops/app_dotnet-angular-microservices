@@ -1,0 +1,36 @@
+{
+  "banners": [
+    {
+      "id": "banner-1",
+      "image_url": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&h=400&fit=crop",
+      "image_target_section": "Explore, Top",
+      "image_text": "Fios Gigabit Connection — Blazing fast internet for your home",
+      "cta_text": "Shop Now",
+      "cta_url": "app://shop/product/fios-gigabit"
+    },
+    {
+      "id": "banner-2",
+      "image_url": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=400&fit=crop",
+      "image_target_section": "Explore, Top",
+      "image_text": "iPhone 16 Pro — Now with Verizon 5G Ultra Wideband",
+      "cta_text": "Get Yours",
+      "cta_url": "app://shop/product/iphone-16-pro"
+    },
+    {
+      "id": "banner-3",
+      "image_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&h=400&fit=crop",
+      "image_target_section": "Explore, Top",
+      "image_text": "Unlimited Plans — Starting at $35/mo with Auto Pay",
+      "cta_text": "See Plans",
+      "cta_url": "app://shop/plans"
+    },
+    {
+      "id": "banner-4",
+      "image_url": "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=400&fit=crop",
+      "image_target_section": "Explore, Top",
+      "image_text": "Stream like never before with Verizon +play",
+      "cta_text": "Learn More",
+      "cta_url": "app://explore/vplay"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "welcome_greeting": {
+    "first_name": "John",
+    "template": "Hi, {first_name}"
+  },
+  "icons": [
+    {
+      "id": "rewards",
+      "type": "rewards",
+      "label": "Rewards",
+      "icon_name": "star",
+      "badge_count": 3,
+      "deep_link": "app://rewards"
+    },
+    {
+      "id": "search",
+      "type": "search",
+      "label": "Search",
+      "icon_name": "search",
+      "badge_count": 0,
+      "deep_link": "app://search"
+    },
+    {
+      "id": "notification",
+      "type": "notification",
+      "label": "Notifications",
+      "icon_name": "notifications",
+      "badge_count": 5,
+      "deep_link": "app://notifications"
+    },
+    {
+      "id": "chat",
+      "type": "chat",
+      "label": "Chat",
+      "icon_name": "chat",
+      "badge_count": 2,
+      "deep_link": "app://aiconnect"
+    },
+    {
+      "id": "profile",
+      "type": "profile",
+      "label": "Profile",
+      "icon_name": "person",
+      "badge_count": 0,
+      "deep_link": "app://account"
+    }
+  ]
+}

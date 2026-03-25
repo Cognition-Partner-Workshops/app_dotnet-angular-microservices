@@ -1,0 +1,39 @@
+{
+  "tabs": [
+    {
+      "id": "explore",
+      "label": "Explore",
+      "icon_name": "explore",
+      "route": "explore",
+      "badge_count": 0
+    },
+    {
+      "id": "shop",
+      "label": "Shop",
+      "icon_name": "shopping_bag",
+      "route": "shop",
+      "badge_count": 0
+    },
+    {
+      "id": "account",
+      "label": "My Account",
+      "icon_name": "person",
+      "route": "account",
+      "badge_count": 0
+    },
+    {
+      "id": "rewards",
+      "label": "Rewards",
+      "icon_name": "star",
+      "route": "rewards",
+      "badge_count": 0
+    },
+    {
+      "id": "aiconnect",
+      "label": "AI Connect",
+      "icon_name": "chat_bubble",
+      "route": "aiconnect",
+      "badge_count": 0
+    }
+  ]
+}

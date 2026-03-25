@@ -2,7 +2,9 @@ import SwiftUI
 import ComposableArchitecture
 import CoreDomain
 
-/// Root tab navigation: Explore, Shop, Account, Rewards, AI Connect.
+/// CMS-driven root tab navigation.
+/// Bottom tab bar is configured from CMS JSON (via ExploreReducer) with hardcoded fallback.
+/// Top nav bar is now rendered inside DynamicFeedView (CMS-driven TopNavBarView).
 public struct MainTabView: View {
     @Bindable var store: StoreOf<AppReducer>
 
@@ -12,11 +14,10 @@ public struct MainTabView: View {
 
     public var body: some View {
         TabView(selection: $store.selectedTab.sending(\.tabSelected)) {
-            // Explore Tab
+            // Explore Tab — CMS-driven content (TopNavBar is inside DynamicFeedView)
             NavigationStack {
                 Text("Explore")
                     .navigationTitle("Explore")
-                    .toolbar { topAppBarItems }
             }
             .tabItem {
                 Label("Explore", systemImage: "globe")
@@ -27,7 +28,6 @@ public struct MainTabView: View {
             NavigationStack {
                 Text("Shop")
                     .navigationTitle("Shop")
-                    .toolbar { topAppBarItems }
             }
             .tabItem {
                 Label("Shop", systemImage: "bag")
@@ -67,41 +67,6 @@ public struct MainTabView: View {
         }
         .onOpenURL { url in
             store.send(.deepLinkReceived(url.absoluteString))
-        }
-    }
-
-    @ToolbarContentBuilder
-    private var topAppBarItems: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarLeading) {
-            Button(action: {}) {
-                Image(systemName: "magnifyingglass")
-            }
-            .accessibilityIdentifier("searchButton")
-        }
-        ToolbarItem(placement: .navigationBarTrailing) {
-            HStack(spacing: 12) {
-                Button(action: {}) {
-                    Image(systemName: "bell")
-                        .overlay(alignment: .topTrailing) {
-                            if store.notificationCount > 0 {
-                                Text("\(store.notificationCount)")
-                                    .font(.caption2)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.white)
-                                    .padding(4)
-                                    .background(Color.red)
-                                    .clipShape(Circle())
-                                    .offset(x: 6, y: -6)
-                            }
-                        }
-                }
-                .accessibilityIdentifier("notificationBell")
-
-                Button(action: {}) {
-                    Image(systemName: "person.crop.circle")
-                }
-                .accessibilityIdentifier("profileButton")
-            }
         }
     }
 }

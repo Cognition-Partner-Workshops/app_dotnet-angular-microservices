@@ -1,0 +1,343 @@
+{
+  "sections": [
+    {
+      "id": "section-verizon-exclusives",
+      "title": "Verizon Exclusives",
+      "section_type": "carousel",
+      "items": [
+        {
+          "id": "ve-1",
+          "image_url": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&h=300&fit=crop",
+          "image_text": "Galaxy S24 Ultra",
+          "context": "Exclusive Verizon deal — save $200 with trade-in",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=galaxy-s24-ultra"
+        },
+        {
+          "id": "ve-2",
+          "image_url": "https://images.unsplash.com/photo-1546868871-af0de0ae72be?w=300&h=300&fit=crop",
+          "image_text": "Pixel 9 Pro",
+          "context": "Exclusive — Get $100 Verizon gift card",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=pixel-9-pro"
+        },
+        {
+          "id": "ve-3",
+          "image_url": "https://images.unsplash.com/photo-1585060544812-6b45742d762f?w=300&h=300&fit=crop",
+          "image_text": "iPhone 16 Pro Max",
+          "context": "Only on Verizon — 5G Ultra Wideband included",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=iphone-16-pro-max"
+        },
+        {
+          "id": "ve-4",
+          "image_url": "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=300&h=300&fit=crop",
+          "image_text": "Apple Watch Ultra 2",
+          "context": "Pair with your Verizon plan for $10/mo",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=apple-watch-ultra-2"
+        },
+        {
+          "id": "ve-5",
+          "image_url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop",
+          "image_text": "AirPods Pro 2",
+          "context": "Free with qualifying phone purchase",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=airpods-pro-2"
+        }
+      ]
+    },
+    {
+      "id": "section-just-for-you",
+      "title": "Just for You",
+      "section_type": "carousel",
+      "items": [
+        {
+          "id": "jfy-1",
+          "image_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=300&h=300&fit=crop",
+          "image_text": "Unlimited Ultimate",
+          "context": "Based on your usage, this plan saves you $15/mo",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=unlimited-ultimate"
+        },
+        {
+          "id": "jfy-2",
+          "image_url": "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=300&h=300&fit=crop",
+          "image_text": "Disney+ Bundle",
+          "context": "Recommended based on your streaming activity",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=disney-plus-bundle"
+        },
+        {
+          "id": "jfy-3",
+          "image_url": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=300&h=300&fit=crop",
+          "image_text": "Fios 2 Gig",
+          "context": "Upgrade from your current Fios plan",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=fios-2-gig"
+        },
+        {
+          "id": "jfy-4",
+          "image_url": "https://images.unsplash.com/photo-1563986768609-322da13575f2?w=300&h=300&fit=crop",
+          "image_text": "Mobile Hotspot 50GB",
+          "context": "Add-on for your current plan",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=hotspot-50gb"
+        },
+        {
+          "id": "jfy-5",
+          "image_url": "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=300&h=300&fit=crop",
+          "image_text": "Verizon +play Pass",
+          "context": "Personalized entertainment bundle",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=vplay-pass"
+        },
+        {
+          "id": "jfy-6",
+          "image_url": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=300&h=300&fit=crop",
+          "image_text": "Phone Protection Plan",
+          "context": "Protect your new device from day one",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=protection-plan"
+        }
+      ]
+    },
+    {
+      "id": "section-verizon-family",
+      "title": "Verizon Family",
+      "section_type": "carousel",
+      "items": [
+        {
+          "id": "vf-1",
+          "image_url": "https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=300&h=300&fit=crop",
+          "image_text": "Family Plan — 4 Lines",
+          "context": "Save $40/mo when you switch all 4 lines",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=family-plan-4"
+        },
+        {
+          "id": "vf-2",
+          "image_url": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=300&fit=crop",
+          "image_text": "Kids Smartwatch",
+          "context": "Keep your kids connected safely with GizmoWatch",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=gizmo-watch"
+        },
+        {
+          "id": "vf-3",
+          "image_url": "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=300&h=300&fit=crop",
+          "image_text": "Shared Data 30GB",
+          "context": "Perfect for families sharing one data pool",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=shared-data-30"
+        },
+        {
+          "id": "vf-4",
+          "image_url": "https://images.unsplash.com/photo-1491013516836-7db643ee125a?w=300&h=300&fit=crop",
+          "image_text": "Parental Controls+",
+          "context": "Advanced content filtering for the family",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=parental-controls"
+        },
+        {
+          "id": "vf-5",
+          "image_url": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=300&h=300&fit=crop",
+          "image_text": "Home Internet Bundle",
+          "context": "Bundle mobile + Fios for the whole family",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=home-internet-bundle"
+        }
+      ]
+    },
+    {
+      "id": "section-fios-tv-mobile",
+      "title": "FIOS TV Mobile",
+      "section_type": "carousel",
+      "items": [
+        {
+          "id": "ftm-1",
+          "image_url": "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=300&h=300&fit=crop",
+          "image_text": "Fios TV — Your Way 350+",
+          "context": "350+ channels including sports, news, entertainment",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=fios-tv-350"
+        },
+        {
+          "id": "ftm-2",
+          "image_url": "https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=300&h=300&fit=crop",
+          "image_text": "Fios TV — Most Popular",
+          "context": "125+ channels — the essentials for less",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=fios-tv-most-popular"
+        },
+        {
+          "id": "ftm-3",
+          "image_url": "https://images.unsplash.com/photo-1574375927938-d5a98e8d7e28?w=300&h=300&fit=crop",
+          "image_text": "NFL Sunday Ticket",
+          "context": "Watch every out-of-market NFL game live",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=nfl-sunday-ticket"
+        },
+        {
+          "id": "ftm-4",
+          "image_url": "https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=300&h=300&fit=crop",
+          "image_text": "Stream TV Soundbar Pro",
+          "context": "4K streaming + premium sound in one device",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=stream-tv-soundbar"
+        },
+        {
+          "id": "ftm-5",
+          "image_url": "https://images.unsplash.com/photo-1593784991095-a205069470b6?w=300&h=300&fit=crop",
+          "image_text": "Fios TV + Netflix",
+          "context": "Bundle and save $5/mo on Netflix Premium",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=fios-tv-netflix"
+        },
+        {
+          "id": "ftm-6",
+          "image_url": "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=300&h=300&fit=crop",
+          "image_text": "Multi-Room DVR",
+          "context": "Record and watch from any room in the house",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=multi-room-dvr"
+        }
+      ]
+    },
+    {
+      "id": "section-everything-you-need",
+      "title": "Everything You Need",
+      "section_type": "grid",
+      "items": [
+        {
+          "id": "eyn-1",
+          "image_url": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=300&h=300&fit=crop",
+          "image_text": "5G Home Internet",
+          "context": "Reliable home internet powered by 5G",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=5g-home-internet"
+        },
+        {
+          "id": "eyn-2",
+          "image_url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=300&h=300&fit=crop",
+          "image_text": "International Calling",
+          "context": "Affordable calling to 230+ countries",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=intl-calling"
+        },
+        {
+          "id": "eyn-3",
+          "image_url": "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=300&h=300&fit=crop",
+          "image_text": "Verizon Cloud 2TB",
+          "context": "Back up photos, videos, and contacts",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=cloud-2tb"
+        },
+        {
+          "id": "eyn-4",
+          "image_url": "https://images.unsplash.com/photo-1563986768609-322da13575f2?w=300&h=300&fit=crop",
+          "image_text": "Device Protection",
+          "context": "Cracked screens, theft, loss coverage",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=device-protection"
+        },
+        {
+          "id": "eyn-5",
+          "image_url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop",
+          "image_text": "TravelPass",
+          "context": "Use your plan abroad for $10/day",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=travelpass"
+        },
+        {
+          "id": "eyn-6",
+          "image_url": "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=300&h=300&fit=crop",
+          "image_text": "Number Share",
+          "context": "Share your number with your smartwatch",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=number-share"
+        }
+      ]
+    },
+    {
+      "id": "section-verizon-store",
+      "title": "Verizon Store",
+      "section_type": "carousel",
+      "items": [
+        {
+          "id": "vs-1",
+          "image_url": "https://images.unsplash.com/photo-1585060544812-6b45742d762f?w=300&h=300&fit=crop",
+          "image_text": "Samsung Galaxy Buds3 Pro",
+          "context": "Premium wireless earbuds with ANC",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=galaxy-buds3-pro"
+        },
+        {
+          "id": "vs-2",
+          "image_url": "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=300&h=300&fit=crop",
+          "image_text": "OtterBox Defender Case",
+          "context": "Military-grade protection for your phone",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=otterbox-defender"
+        },
+        {
+          "id": "vs-3",
+          "image_url": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=300&h=300&fit=crop",
+          "image_text": "Belkin Wireless Charger",
+          "context": "15W fast wireless charging pad",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=belkin-charger"
+        },
+        {
+          "id": "vs-4",
+          "image_url": "https://images.unsplash.com/photo-1546868871-af0de0ae72be?w=300&h=300&fit=crop",
+          "image_text": "JBL Flip 6 Speaker",
+          "context": "Portable waterproof Bluetooth speaker",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=jbl-flip-6"
+        },
+        {
+          "id": "vs-5",
+          "image_url": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&h=300&fit=crop",
+          "image_text": "Anker Power Bank 20K",
+          "context": "Charge your phone 5x on the go",
+          "cta_text": "Add to Cart",
+          "cta_action": "add_to_cart",
+          "cta_deep_link": "app://shop/cart/add?itemId=anker-powerbank"
+        }
+      ]
+    }
+  ]
+}

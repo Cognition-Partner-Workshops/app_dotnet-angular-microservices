@@ -13,9 +13,11 @@ import com.enterprise.core.domain.repositories.CartRepository
 import com.enterprise.core.domain.repositories.ChatRepository
 import com.enterprise.core.domain.repositories.FeedRepository
 import com.enterprise.core.domain.repositories.FeatureFlagRepository
+import com.enterprise.core.domain.repositories.CMSRepository
 import com.enterprise.core.domain.repositories.RewardsRepository
 import com.enterprise.core.network.ApiClient
 import com.enterprise.core.network.WebSocketClient
+import com.enterprise.mobile.data.MockCMSRepository
 import com.enterprise.feature.aiconnect.data.ChatRepositoryImpl
 import com.enterprise.feature.aiconnect.domain.repositories.AIConnectRepository
 import com.enterprise.feature.auth.data.AuthRepositoryImpl
@@ -168,6 +170,15 @@ object AppProvidesModule {
             override suspend fun shareUrl(url: String, title: String?) = shareText(url, title)
         }
     }
+
+    // ── CMS Repository (MockForDemo) ────────────────────────────────
+
+    @Provides @Singleton
+    fun provideCMSRepository(impl: MockCMSRepository): CMSRepository {
+        return impl
+    }
+
+    // ── OS Services ────────────────────────────────────────────────────
 
     @Provides @Singleton
     fun providePermissionService(): PermissionService {
