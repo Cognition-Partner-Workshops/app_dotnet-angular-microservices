@@ -1,0 +1,100 @@
+name: Inventory Service — Build, Test & Push
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/inventory-service/**'
+      - 'tests/inventory-service/**'
+      - 'iac/inventory-service/**'
+      - 'InventoryService.sln'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/inventory-service/**'
+      - 'tests/inventory-service/**'
+      - 'iac/inventory-service/**'
+      - 'InventoryService.sln'
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: 599083837640.dkr.ecr.us-east-1.amazonaws.com
+  ECR_REPOSITORY: workshop/inventory-service
+  IMAGE_TAG: ${{ github.sha }}
+  DOTNET_VERSION: '8.0.x'
+  NODE_VERSION: '20'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore InventoryService.sln
+
+      - name: Build
+        run: dotnet build InventoryService.sln --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test InventoryService.sln --configuration Release --no-build --verbosity normal
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Angular dependencies
+        working-directory: src/inventory-service/client-app
+        run: npm ci
+
+      - name: Build Angular app
+        working-directory: src/inventory-service/client-app
+        run: npm run build
+
+  docker-push:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::599083837640:role/github-actions-ecr-push
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker image
+        run: |
+          docker build \
+            -f iac/inventory-service/docker/Dockerfile \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Trigger ArgoCD sync
+        run: |
+          echo "Image pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo "ArgoCD will auto-sync from the Helm chart in this repo."
