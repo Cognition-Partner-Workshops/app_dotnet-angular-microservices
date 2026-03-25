@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using InventoryService.Api.Models;
 using InventoryService.Api.Services;
 
 namespace InventoryService.Api.Controllers;
@@ -54,7 +55,42 @@ public class InventoryController : ControllerBase
             return Conflict(new { error = ex.Message });
         }
     }
+    /// <summary>Deducts stock from an inventory item (called by the monolith Order service).</summary>
+    [HttpPost("product/{productId}/deduct")]
+    [ProducesResponseType(typeof(InventoryItem), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> DeductStock(int productId, [FromBody] DeductRequest request)
+    {
+        try
+        {
+            var item = await _inventoryService.DeductStockAsync(productId, request.Quantity);
+            return Ok(item);
+        }
+        catch (ArgumentException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>Checks whether sufficient stock is available for a product (read-only).</summary>
+    [HttpGet("product/{productId}/check")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CheckStock(int productId, [FromQuery] int quantity)
+    {
+        var item = await _inventoryService.GetInventoryByProductIdAsync(productId);
+        if (item is null)
+            return NotFound(new { error = $"No inventory record for product {productId}" });
+
+        return Ok(new { productId, quantity, available = item.QuantityOnHand >= quantity });
+    }
 }
 
 public record RestockRequest(int Quantity);
 public record DecrementRequest(int Quantity);
+public record DeductRequest(int Quantity);
