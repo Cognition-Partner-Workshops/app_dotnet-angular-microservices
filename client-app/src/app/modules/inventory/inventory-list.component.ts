@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
 
@@ -17,7 +16,7 @@ import { environment } from '../../../environments/environment';
         <tr *ngFor="let i of items" [class.low-stock]="i.quantityOnHand <= i.reorderLevel">
           <td>{{i.productName}}</td><td>{{i.quantityOnHand}}</td><td>{{i.reorderLevel}}</td><td>{{i.warehouseLocation}}</td><td>{{i.lastRestocked | date}}</td>
           <td>
-            <input type="number" [(ngModel)]="restockQty" min="1" placeholder="Qty" style="width:60px">
+            <input type="number" [(ngModel)]="restockQtyMap[i.productId]" min="1" placeholder="Qty" style="width:60px">
             <button (click)="restock(i.productId)">Restock</button>
           </td>
         </tr>
@@ -28,12 +27,22 @@ import { environment } from '../../../environments/environment';
 })
 export class InventoryListComponent implements OnInit {
   items: any[] = [];
-  restockQty = 10;
+  restockQtyMap: Record<number, number> = {};
   constructor(private http: HttpClient) {}
   ngOnInit() { this.loadItems(); }
-  loadItems() { this.http.get<any[]>(`${environment.apiUrl}/api/inventory`).subscribe(data => this.items = data); }
+  loadItems() {
+    this.http.get<any[]>(`${environment.apiUrl}/api/inventory`).subscribe(data => {
+      this.items = data;
+      data.forEach(item => {
+        if (!(item.productId in this.restockQtyMap)) {
+          this.restockQtyMap[item.productId] = 10;
+        }
+      });
+    });
+  }
   restock(productId: number) {
-    this.http.post(`${environment.apiUrl}/api/inventory/product/${productId}/restock`, { quantity: this.restockQty })
+    const qty = this.restockQtyMap[productId] || 10;
+    this.http.post(`${environment.apiUrl}/api/inventory/product/${productId}/restock`, { quantity: qty })
       .subscribe(() => this.loadItems());
   }
 }

@@ -37,6 +37,8 @@ public class InventoryItemService
     /// <exception cref="ArgumentException">No inventory record for the product.</exception>
     public async Task<InventoryItem> RestockAsync(int productId, int quantity)
     {
+        if (quantity <= 0)
+            throw new ArgumentException("Restock quantity must be greater than zero.");
         var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ProductId == productId)
             ?? throw new ArgumentException($"No inventory record for product {productId}");
         item.QuantityOnHand += quantity;
@@ -62,6 +64,7 @@ public class InventoryItemService
     /// <returns><c>true</c> if stock was successfully deducted; <c>false</c> if insufficient.</returns>
     public async Task<bool> CheckAndDeductStockAsync(int productId, int quantity)
     {
+        if (quantity <= 0) return false;
         var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ProductId == productId);
         if (item is null || item.QuantityOnHand < quantity) return false;
         item.QuantityOnHand -= quantity;
@@ -74,6 +77,7 @@ public class InventoryItemService
     /// <param name="quantity">The quantity to deduct.</param>
     public async Task<InventoryItem?> DeductStockAsync(int productId, int quantity)
     {
+        if (quantity <= 0) return null;
         var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ProductId == productId);
         if (item is null || item.QuantityOnHand < quantity) return null;
         item.QuantityOnHand -= quantity;
