@@ -29,7 +29,7 @@ import { environment } from '../../../environments/environment';
           <td>{{i.warehouseLocation}}</td>
           <td>{{i.lastRestocked | date}}</td>
           <td>
-            <input type="number" [(ngModel)]="restockQty" min="1" placeholder="Qty" style="width:60px">
+            <input type="number" [(ngModel)]="restockQtyMap[i.productId]" min="1" placeholder="Qty" style="width:60px">
             <button (click)="restock(i.productId)">Restock</button>
           </td>
         </tr>
@@ -40,16 +40,24 @@ import { environment } from '../../../environments/environment';
 })
 export class InventoryListComponent implements OnInit {
   items: any[] = [];
-  restockQty = 10;
+  restockQtyMap: { [productId: number]: number } = {};
   constructor(private http: HttpClient) {}
   ngOnInit() {
     this.loadItems();
   }
   loadItems() {
-    this.http.get<any[]>(`${environment.apiUrl}/api/inventory`).subscribe(data => this.items = data);
+    this.http.get<any[]>(`${environment.apiUrl}/api/inventory`).subscribe(data => {
+      this.items = data;
+      data.forEach(item => {
+        if (!(item.productId in this.restockQtyMap)) {
+          this.restockQtyMap[item.productId] = 10;
+        }
+      });
+    });
   }
   restock(productId: number) {
-    this.http.post(`${environment.apiUrl}/api/inventory/product/${productId}/restock`, { quantity: this.restockQty })
+    const qty = this.restockQtyMap[productId] || 10;
+    this.http.post(`${environment.apiUrl}/api/inventory/product/${productId}/restock`, { quantity: qty })
       .subscribe(() => this.loadItems());
   }
 }
