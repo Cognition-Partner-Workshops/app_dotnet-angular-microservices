@@ -1,19 +1,16 @@
-# Inventory Service
+# Microservices — OrderManager Decomposition
 
-A .NET 8 + Angular 17 microservice extracted from the [OrderManager monolith](https://github.com/Cognition-Partner-Workshops/app_dotnet-angular-monolith). This service owns all inventory management concerns: stock levels, warehouse locations, reorder thresholds, and stock deduction/restocking.
+Microservices extracted from the [OrderManager monolith](https://github.com/Cognition-Partner-Workshops/app_dotnet-angular-monolith). Each service is independently deployable with its own database, Helm chart, Dockerfile, and CI/CD pipeline.
 
-## Architecture
+## Services
 
-| Concern | Description |
-|---------|-------------|
-| **Stock Levels** | Track quantity on hand per product |
-| **Warehouse Locations** | Map products to warehouse locations |
-| **Reorder Alerts** | Flag items at or below reorder level |
-| **Restock / Deduct** | HTTP endpoints for stock operations |
+| Service | Path | Description |
+|---------|------|-------------|
+| **inventory-service** | `services/inventory-service/` | Stock levels, warehouse locations, reorder alerts, restock/deduct operations |
 
-The service has its own SQLite database and is independently deployable.
+## Inventory Service
 
-## Tech Stack
+### Tech Stack
 
 - **Backend**: .NET 8, C#, Entity Framework Core, SQLite
 - **Frontend**: Angular 17, TypeScript
@@ -21,7 +18,7 @@ The service has its own SQLite database and is independently deployable.
 - **Container**: Multi-stage Docker build (Node + .NET SDK + aspnet runtime)
 - **Orchestration**: Helm chart, ArgoCD, HPA, NetworkPolicy, ServiceMonitor
 
-## API Endpoints
+### API Endpoints
 
 | Method | Path | Description |
 |--------|------|-------------|
@@ -32,38 +29,37 @@ The service has its own SQLite database and is independently deployable.
 | GET | `/api/inventory/low-stock` | List items at or below reorder level |
 | GET | `/health` | Health check |
 
-## Getting Started
-
-### Prerequisites
-- .NET 8 SDK
-- Node.js 18+
-- Angular CLI (`npm install -g @angular/cli`)
-
-### Run the application
+### Getting Started
 
 ```bash
+cd services/inventory-service
+
 # Restore .NET dependencies
-dotnet restore src/InventoryService.Api/InventoryService.Api.csproj
+dotnet restore
 
 # Install Angular dependencies
-cd client-app && npm install && cd ..
+cd client-app && npm install && cd ../..
 
 # Run the API (serves Angular app too)
 dotnet run --project src/InventoryService.Api/InventoryService.Api.csproj
 ```
 
-The application will be available at `http://localhost:5000`.
+The application will be available at `http://localhost:5002`.
 
-## IaC
+### IaC
 
-- **Dockerfile**: `docker/Dockerfile` — multi-stage build
-- **Helm chart**: `helm/inventory-service/` — deployment, service, ingress, network policy, service monitor, HPA
-- **ArgoCD**: `argocd/` — application manifests for dev and staging
-- **CI/CD**: `ci/build-push.yaml` — GitHub Actions pipeline
+- **Dockerfile**: `services/inventory-service/docker/Dockerfile` — multi-stage build
+- **Helm chart**: `services/inventory-service/helm/inventory-service/` — deployment, service, ingress, network policy, service monitor, HPA
+- **ArgoCD**: `services/inventory-service/argocd/` — application manifests for dev and staging
+- **CI/CD**: `.github/workflows/inventory-service-ci.yaml` — build, test, push to ECR, trigger ArgoCD sync
 
-## Monolith Integration
+### Monolith Integration
 
-The OrderManager monolith calls this service via HTTP to check and deduct inventory during order creation, replacing the previous in-process `InventoryService` dependency.
+The OrderManager monolith calls this service via HTTP (`InventoryServiceClient`) to check and deduct inventory during order creation, replacing the previous in-process `InventoryService` dependency.
+
+## Platform Conformance
+
+All services conform to the [platform-engineering-shared-services](https://github.com/Cognition-Partner-Workshops/platform-engineering-shared-services) standard and follow the IaC patterns from [app_dotnet-angular-monolith-iac](https://github.com/Cognition-Partner-Workshops/app_dotnet-angular-monolith-iac).
 
 ## License
 
