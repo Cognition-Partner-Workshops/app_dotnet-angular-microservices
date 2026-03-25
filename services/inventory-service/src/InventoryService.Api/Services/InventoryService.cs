@@ -15,7 +15,7 @@ public class InventoryManagementService
 
     public async Task<List<InventoryItem>> GetAllInventoryAsync()
     {
-        return await _context.InventoryItems.ToListAsync();
+        return await _context.InventoryItems.OrderBy(i => i.ProductId).ToListAsync();
     }
 
     public async Task<InventoryItem?> GetInventoryByProductIdAsync(int productId)
@@ -27,6 +27,7 @@ public class InventoryManagementService
     {
         var item = await _context.InventoryItems.FirstOrDefaultAsync(i => i.ProductId == productId)
             ?? throw new ArgumentException($"No inventory record for product {productId}");
+
         item.QuantityOnHand += quantity;
         item.LastRestocked = DateTime.UtcNow;
         await _context.SaveChangesAsync();
@@ -37,6 +38,7 @@ public class InventoryManagementService
     {
         return await _context.InventoryItems
             .Where(i => i.QuantityOnHand <= i.ReorderLevel)
+            .OrderBy(i => i.QuantityOnHand)
             .ToListAsync();
     }
 
@@ -46,7 +48,7 @@ public class InventoryManagementService
         if (item is null) return null;
 
         if (item.QuantityOnHand < quantity)
-            throw new InvalidOperationException($"Insufficient stock for product {productId}. Available: {item.QuantityOnHand}");
+            throw new InvalidOperationException($"Insufficient stock for product {productId}. Available: {item.QuantityOnHand}, Requested: {quantity}");
 
         item.QuantityOnHand -= quantity;
         await _context.SaveChangesAsync();

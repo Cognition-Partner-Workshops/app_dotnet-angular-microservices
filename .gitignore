@@ -6,15 +6,17 @@ obj/
 *.suo
 .vs/
 
-## Node
+## Node / Angular
 node_modules/
 dist/
 .angular/
+npm-debug.log*
 
 ## IDE
 .idea/
 .vscode/
 *.swp
+*.swo
 
 ## OS
 .DS_Store

@@ -1,6 +1,19 @@
 # Inventory Service
 
-A standalone .NET 8 + Angular 17 microservice decomposed from the OrderManager monolith. Manages stock levels, warehouse locations, and reorder thresholds.
+A standalone .NET 8 Web API microservice decomposed from the [OrderManager monolith](https://github.com/Cognition-Partner-Workshops/app_dotnet-angular-monolith). Manages stock levels, warehouse locations, restocking, and stock availability checks.
+
+## Architecture
+
+This microservice owns the **Inventory** bounded context, previously a tightly-coupled module inside the OrderManager monolith. It has its own database, API surface, and Angular frontend.
+
+| Component | Technology |
+|-----------|-----------|
+| **Backend** | .NET 8, C#, Entity Framework Core, SQLite |
+| **Frontend** | Angular 17, TypeScript |
+| **API** | RESTful with Swagger/OpenAPI |
+| **Container** | Multi-stage Docker build (Alpine) |
+| **Orchestration** | Kubernetes (Helm chart + ArgoCD) |
+| **CI/CD** | GitHub Actions → ECR → ArgoCD |
 
 ## API Endpoints
 
@@ -26,7 +39,7 @@ A standalone .NET 8 + Angular 17 microservice decomposed from the OrderManager m
 - Node.js 18+
 - Angular CLI (`npm install -g @angular/cli`)
 
-### Run locally
+### Run Locally
 
 ```bash
 # Restore .NET dependencies
@@ -37,14 +50,13 @@ cd client-app && npm install && cd ..
 
 # Run the API (serves Angular app too)
 dotnet run --project src/InventoryService.Api/InventoryService.Api.csproj
-```
 
 The service will be available at `http://localhost:5000`.
 
-### Run tests
+### Run Tests
 
 ```bash
-dotnet test
+dotnet test --verbosity normal
 ```
 
 ## Infrastructure

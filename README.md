@@ -8,7 +8,7 @@ Microservices decomposed from the [OrderManager monolith](https://github.com/Cog
 |---------|-------------|------|
 | [inventory-service](services/inventory-service/) | Stock levels, warehouse locations, reorder management | 8080 |
 
-## Platform Conformance
+## Deployment
 
 All services conform to the [platform-engineering-shared-services](https://github.com/Cognition-Partner-Workshops/platform-engineering-shared-services) standard:
 - Kubernetes-native with Helm charts

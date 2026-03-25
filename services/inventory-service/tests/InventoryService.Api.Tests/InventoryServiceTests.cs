@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Xunit;
 using InventoryService.Api.Data;
 using InventoryService.Api.Models;
 using InventoryService.Api.Services;
@@ -19,7 +20,7 @@ public class InventoryServiceTests
     }
 
     [Fact]
-    public async Task GetAllInventory_ReturnsSeedData()
+    public async Task GetAllInventory_ReturnsAllItems()
     {
         using var context = CreateContext();
         var service = new InventoryManagementService(context);
@@ -28,7 +29,7 @@ public class InventoryServiceTests
     }
 
     [Fact]
-    public async Task GetByProductId_ReturnsCorrectItem()
+    public async Task GetInventoryByProductId_ReturnsCorrectItem()
     {
         using var context = CreateContext();
         var service = new InventoryManagementService(context);
