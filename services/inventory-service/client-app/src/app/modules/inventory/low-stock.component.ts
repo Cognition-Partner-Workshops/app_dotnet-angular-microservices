@@ -9,14 +9,10 @@ import { environment } from '../../../environments/environment';
   imports: [CommonModule],
   template: `
     <h2>Low Stock Items</h2>
+    <p *ngIf="!items.length">No low-stock items found.</p>
     <table *ngIf="items.length">
       <thead>
-        <tr>
-          <th>Product</th>
-          <th>On Hand</th>
-          <th>Reorder Level</th>
-          <th>Location</th>
-        </tr>
+        <tr><th>Product</th><th>On Hand</th><th>Reorder Level</th><th>Location</th></tr>
       </thead>
       <tbody>
         <tr *ngFor="let i of items" class="low-stock">
@@ -27,14 +23,12 @@ import { environment } from '../../../environments/environment';
         </tr>
       </tbody>
     </table>
-    <p *ngIf="!items.length">No low stock items.</p>
+    <p *ngIf="!items.length">All items are sufficiently stocked.</p>
   `
 })
 export class LowStockComponent implements OnInit {
   items: any[] = [];
-
   constructor(private http: HttpClient) {}
-
   ngOnInit() {
     this.http.get<any[]>(`${environment.apiUrl}/api/inventory/low-stock`).subscribe(data => this.items = data);
   }

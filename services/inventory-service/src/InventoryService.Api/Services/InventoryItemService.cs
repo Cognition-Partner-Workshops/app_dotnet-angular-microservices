@@ -4,11 +4,11 @@ using InventoryService.Api.Models;
 
 namespace InventoryService.Api.Services;
 
-public class InventoryManager
+public class InventoryItemService
 {
     private readonly InventoryDbContext _context;
 
-    public InventoryManager(InventoryDbContext context)
+    public InventoryItemService(InventoryDbContext context)
     {
         _context = context;
     }
@@ -39,8 +39,7 @@ public class InventoryManager
             ?? throw new ArgumentException($"No inventory record for product {productId}");
 
         if (item.QuantityOnHand < quantity)
-            throw new InvalidOperationException(
-                $"Insufficient stock for product {productId}. Available: {item.QuantityOnHand}, Requested: {quantity}");
+            throw new InvalidOperationException($"Insufficient stock for product {productId}. Available: {item.QuantityOnHand}");
 
         item.QuantityOnHand -= quantity;
         await _context.SaveChangesAsync();

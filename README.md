@@ -1,35 +1,39 @@
-# Microservices — OrderManager Decomposition
+# Microservices — Decomposed from OrderManager Monolith
 
-Microservices extracted from the [OrderManager monolith](https://github.com/Cognition-Partner-Workshops/app_dotnet-angular-monolith). Each service is independently deployable with its own database, Helm chart, Dockerfile, and CI/CD pipeline.
+This repository contains microservices extracted from the [OrderManager monolith](https://github.com/Cognition-Partner-Workshops/app_dotnet-angular-monolith). Each service is independently deployable and conforms to the [platform-engineering-shared-services](https://github.com/Cognition-Partner-Workshops/platform-engineering-shared-services) standard.
 
 ## Services
 
-| Service | Path | Description |
-|---------|------|-------------|
-| **inventory-service** | `services/inventory-service/` | Stock levels, warehouse locations, reorder alerts, restock/deduct operations |
+| Service | Description | Tech Stack |
+|---------|-------------|------------|
+| **inventory-service** | Stock levels, warehouse locations, reorder management | .NET 8, Angular 17, EF Core, SQLite |
 
-## Inventory Service
+## Repository Structure
 
-### Tech Stack
+```
+services/
+└── inventory-service/
+    ├── src/InventoryService.Api/    # .NET 8 Web API
+    ├── tests/                       # Unit tests
+    ├── client-app/                  # Angular 17 frontend
+    └── InventoryService.sln
+infrastructure/
+└── inventory-service/
+    ├── docker/Dockerfile            # Multi-stage build
+    ├── helm/inventory-service/      # Helm chart (deployment, service, ingress, HPA, network policy, service monitor)
+    └── argocd/                      # ArgoCD Application manifests (dev, staging)
+.github/workflows/
+└── inventory-service-ci.yaml       # GitHub Actions CI/CD pipeline
+```
 
-- **Backend**: .NET 8, C#, Entity Framework Core, SQLite
-- **Frontend**: Angular 17, TypeScript
-- **API**: RESTful with Swagger/OpenAPI
-- **Container**: Multi-stage Docker build (Node + .NET SDK + aspnet runtime)
-- **Orchestration**: Helm chart, ArgoCD, HPA, NetworkPolicy, ServiceMonitor
+## Getting Started
 
-### API Endpoints
+### Prerequisites
+- .NET 8 SDK
+- Node.js 18+
+- Angular CLI (`npm install -g @angular/cli`)
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/inventory` | List all inventory items |
-| GET | `/api/inventory/product/{productId}` | Get inventory for a product |
-| POST | `/api/inventory/product/{productId}/restock` | Restock a product |
-| POST | `/api/inventory/product/{productId}/deduct` | Deduct stock (used by OrderManager) |
-| GET | `/api/inventory/low-stock` | List items at or below reorder level |
-| GET | `/health` | Health check |
-
-### Getting Started
+### Run the Inventory Service
 
 ```bash
 cd services/inventory-service
@@ -38,28 +42,34 @@ cd services/inventory-service
 dotnet restore
 
 # Install Angular dependencies
-cd client-app && npm install && cd ../..
+cd client-app && npm install && cd ..
 
 # Run the API (serves Angular app too)
 dotnet run --project src/InventoryService.Api/InventoryService.Api.csproj
 ```
 
-The application will be available at `http://localhost:5002`.
+The service will be available at `http://localhost:5002`.
 
-### IaC
+### Run Tests
 
-- **Dockerfile**: `services/inventory-service/docker/Dockerfile` — multi-stage build
-- **Helm chart**: `services/inventory-service/helm/inventory-service/` — deployment, service, ingress, network policy, service monitor, HPA
-- **ArgoCD**: `services/inventory-service/argocd/` — application manifests for dev and staging
-- **CI/CD**: `.github/workflows/inventory-service-ci.yaml` — build, test, push to ECR, trigger ArgoCD sync
+```bash
+dotnet test services/inventory-service/InventoryService.sln
+```
+
+## API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/inventory` | List all inventory items |
+| GET | `/api/inventory/product/{productId}` | Get inventory for a specific product |
+| POST | `/api/inventory/product/{productId}/restock` | Restock a product |
+| POST | `/api/inventory/product/{productId}/deduct` | Deduct stock (used by monolith HTTP client) |
+| GET | `/api/inventory/low-stock` | List items at or below reorder level |
+| GET | `/health` | Health check |
 
 ### Monolith Integration
 
-The OrderManager monolith calls this service via HTTP (`InventoryServiceClient`) to check and deduct inventory during order creation, replacing the previous in-process `InventoryService` dependency.
-
-## Platform Conformance
-
-All services conform to the [platform-engineering-shared-services](https://github.com/Cognition-Partner-Workshops/platform-engineering-shared-services) standard and follow the IaC patterns from [app_dotnet-angular-monolith-iac](https://github.com/Cognition-Partner-Workshops/app_dotnet-angular-monolith-iac).
+The OrderManager monolith calls this service via HTTP (`InventoryServiceClient`) instead of direct database access. Configure the monolith with the `InventoryService__BaseUrl` environment variable pointing to this service.
 
 ## License
 
