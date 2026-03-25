@@ -1,4 +1,4 @@
-name: Build and Push to ECR
+name: Inventory Service CI/CD
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
 
   build-and-push:
     needs: build-and-test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -58,8 +58,26 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker build -f docker/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
-
-      - name: Push Docker image
-        run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+  deploy-dev:
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger ArgoCD sync for dev
+        run: |
+          echo "ArgoCD will auto-sync from the helm/inventory-service chart with values-dev.yaml"
+          echo "Image tag: ${{ env.IMAGE_TAG }}"
+
+  deploy-staging:
+    needs: deploy-dev
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Trigger ArgoCD sync for staging
+        run: |
+          echo "ArgoCD will auto-sync from the helm/inventory-service chart with values-staging.yaml"
+          echo "Image tag: ${{ env.IMAGE_TAG }}"
