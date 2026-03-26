@@ -60,7 +60,7 @@ public class InventoryController : ControllerBase
     [HttpPost("product/{productId}/reserve")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> ReserveStock(int productId, [FromBody] RestockRequest request)
+    public async Task<IActionResult> ReserveStock(int productId, [FromBody] DeductRequest request)
     {
         var success = await _inventoryService.ReserveStockAsync(productId, request.Quantity);
         if (!success)
