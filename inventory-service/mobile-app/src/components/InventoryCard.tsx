@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from './Icon';
 import { InventoryItem } from '../types/inventory';
 
 interface InventoryCardProps {
@@ -38,7 +38,7 @@ export function InventoryCard({ item, onRestock }: InventoryCardProps) {
           <Text style={styles.productName}>{item.productName}</Text>
           {isLowStock && (
             <View style={styles.lowStockBadge}>
-              <Ionicons name="warning" size={12} color="#fff" />
+              <Icon name="warning" size={12} color="#fff" />
               <Text style={styles.lowStockBadgeText}>Low Stock</Text>
             </View>
           )}
@@ -48,24 +48,24 @@ export function InventoryCard({ item, onRestock }: InventoryCardProps) {
 
       <View style={styles.details}>
         <View style={styles.detailRow}>
-          <Ionicons name="cube-outline" size={16} color="#666" />
+          <Icon name="cube-outline" size={16} color="#666" />
           <Text style={styles.detailLabel}>On Hand:</Text>
           <Text style={[styles.detailValue, isLowStock && styles.lowStockValue]}>
             {item.quantityOnHand}
           </Text>
         </View>
         <View style={styles.detailRow}>
-          <Ionicons name="alert-circle-outline" size={16} color="#666" />
+          <Icon name="alert-circle-outline" size={16} color="#666" />
           <Text style={styles.detailLabel}>Reorder Level:</Text>
           <Text style={styles.detailValue}>{item.reorderLevel}</Text>
         </View>
         <View style={styles.detailRow}>
-          <Ionicons name="location-outline" size={16} color="#666" />
+          <Icon name="location-outline" size={16} color="#666" />
           <Text style={styles.detailLabel}>Location:</Text>
           <Text style={styles.detailValue}>{item.warehouseLocation}</Text>
         </View>
         <View style={styles.detailRow}>
-          <Ionicons name="time-outline" size={16} color="#666" />
+          <Icon name="time-outline" size={16} color="#666" />
           <Text style={styles.detailLabel}>Last Restocked:</Text>
           <Text style={styles.detailValue}>{formattedDate}</Text>
         </View>
@@ -85,7 +85,7 @@ export function InventoryCard({ item, onRestock }: InventoryCardProps) {
           onPress={handleRestock}
           disabled={isRestocking}
         >
-          <Ionicons name="add-circle-outline" size={18} color="#fff" />
+          <Icon name="add-circle-outline" size={18} color="#fff" />
           <Text style={styles.restockButtonText}>
             {isRestocking ? 'Restocking...' : 'Restock'}
           </Text>

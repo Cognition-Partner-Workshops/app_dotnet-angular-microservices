@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from './Icon';
 
 interface StatusBannerProps {
   isConnected: boolean;
@@ -11,7 +11,7 @@ export function StatusBanner({ isConnected }: StatusBannerProps) {
 
   return (
     <View style={styles.banner}>
-      <Ionicons name="cloud-offline-outline" size={16} color="#fff" />
+      <Icon name="cloud-offline-outline" size={16} color="#fff" />
       <Text style={styles.text}>Cannot reach Inventory API</Text>
     </View>
   );

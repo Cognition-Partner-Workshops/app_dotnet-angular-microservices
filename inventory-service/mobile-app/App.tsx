@@ -2,7 +2,7 @@ import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from './src/components/Icon';
 import { InventoryListScreen } from './src/screens/InventoryListScreen';
 import { LowStockScreen } from './src/screens/LowStockScreen';
 
@@ -35,7 +35,7 @@ export default function App() {
           options={{
             headerTitle: 'Inventory',
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="cube-outline" size={size} color={color} />
+              <Icon name="cube-outline" size={size} color={color} />
             ),
           }}
         />
@@ -45,7 +45,7 @@ export default function App() {
           options={{
             headerTitle: 'Low Stock Alerts',
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="warning-outline" size={size} color={color} />
+              <Icon name="warning-outline" size={size} color={color} />
             ),
           }}
         />

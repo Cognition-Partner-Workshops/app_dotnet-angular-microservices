@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, FlatList, StyleSheet, Text, ActivityIndicator, RefreshControl } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../components/Icon';
 import { InventoryItem } from '../types/inventory';
 import { inventoryApi } from '../services/api';
 import { StatusBanner } from '../components/StatusBanner';
@@ -60,7 +60,7 @@ export function LowStockScreen() {
           renderItem={({ item }) => (
             <View style={styles.card}>
               <View style={styles.cardHeader}>
-                <Ionicons name="warning" size={20} color="#e74c3c" />
+                <Icon name="warning" size={20} color="#e74c3c" />
                 <Text style={styles.productName}>{item.productName}</Text>
               </View>
               <Text style={styles.sku}>{item.productSku}</Text>
@@ -86,7 +86,7 @@ export function LowStockScreen() {
           }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Ionicons name="checkmark-circle" size={64} color="#27ae60" />
+              <Icon name="checkmark-circle" size={64} color="#27ae60" />
               <Text style={styles.emptyTitle}>All stocked up!</Text>
               <Text style={styles.emptySubtitle}>No items are below reorder level.</Text>
             </View>
