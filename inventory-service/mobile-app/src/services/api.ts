@@ -1,10 +1,23 @@
+import { Platform } from 'react-native';
 import { InventoryItem, RestockRequest } from '../types/inventory';
 
-// Configure this to point to your Inventory Service backend.
-// For local development: http://localhost:5000
-// For Android emulator: http://10.0.2.2:5000
-// For production: replace with your deployed API URL
-const API_BASE_URL = 'http://localhost:5000';
+// Auto-detect the correct API URL based on platform:
+//   Web / iOS Simulator  → localhost
+//   Android Emulator      → 10.0.2.2 (special alias for host loopback)
+//   Physical device / Prod → override via EXPO_PUBLIC_API_URL env var
+function getApiBaseUrl(): string {
+  // Allow explicit override (set in .env or app.config.js)
+  const envUrl: string | undefined = process.env.EXPO_PUBLIC_API_URL;
+  if (envUrl) return envUrl;
+
+  if (Platform.OS === 'android') {
+    return 'http://10.0.2.2:5000';
+  }
+  // iOS simulator & web both resolve localhost to the host machine
+  return 'http://localhost:5000';
+}
+
+const API_BASE_URL = getApiBaseUrl();
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {

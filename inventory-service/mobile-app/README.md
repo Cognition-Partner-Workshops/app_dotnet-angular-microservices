@@ -13,7 +13,8 @@ The app features two main screens:
 - **Framework**: React Native with Expo SDK 50
 - **Navigation**: React Navigation (Bottom Tabs)
 - **Language**: TypeScript
-- **Icons**: Expo Vector Icons (Ionicons)
+- **Icons**: Ionicons via @expo/vector-icons (native) with emoji fallback (web)
+- **Platforms**: iOS, Android, Web
 
 ## Getting Started
 
@@ -31,17 +32,14 @@ npm install
 
 ### Configure API URL
 
-Edit `src/services/api.ts` and set `API_BASE_URL` to your backend URL:
+The app automatically selects the correct API URL per platform:
+- **Web / iOS Simulator** → `http://localhost:5000`
+- **Android Emulator** → `http://10.0.2.2:5000` (Android's host loopback alias)
+- **Physical device / Production** → set the `EXPO_PUBLIC_API_URL` environment variable:
 
-```typescript
-// Local development
-const API_BASE_URL = 'http://localhost:5000';
-
-// Android emulator
-const API_BASE_URL = 'http://10.0.2.2:5000';
-
-// Production
-const API_BASE_URL = 'https://your-api.example.com';
+```bash
+# Point to a deployed backend for physical devices
+EXPO_PUBLIC_API_URL=https://your-api.example.com npx expo start
 ```
 
 ### Run the App
